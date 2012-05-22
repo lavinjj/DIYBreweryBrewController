@@ -36,7 +36,11 @@ namespace CodingSmackdown.TemperatureController
             lcd.Begin(16, 2);
 
             // Print a message to the LCD.
-            lcd.Write("DIY Brewery     Temp Controller");
+            lcd.Write("DIY Brewery");
+            lcd.SetCursorPosition(0, 1);
+            lcd.Write("Temp Controller");
+
+            Thread.Sleep(1000);
 
             _displayHelper = new OutputHelper();
             _displayHelper.DisplayController = lcd;

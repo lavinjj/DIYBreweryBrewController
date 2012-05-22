@@ -76,7 +76,6 @@ namespace CodingSmackdown.Services
 
             _displayController.SetCursorPosition(0, 1);
             _displayController.Write(displayString);
-            Thread.Sleep(1000);
         }
 
         public void DisplayText(string message)
@@ -84,7 +83,6 @@ namespace CodingSmackdown.Services
             _displayController.Clear();
             _displayController.Home();
             _displayController.Write(message);
-            Thread.Sleep(1000);            
         }
     }
 }
