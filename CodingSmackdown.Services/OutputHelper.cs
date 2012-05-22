@@ -1,0 +1,90 @@
+using System;
+using System.IO;
+using System.Threading;
+using Microsoft.SPOT;
+using MicroLiquidCrystal;
+
+namespace CodingSmackdown.Services
+{
+    public class OutputHelper
+    {
+        private Lcd _displayController = null;
+
+        public Lcd DisplayController
+        {
+            get { return _displayController; }
+            set { _displayController = value; }
+        }
+
+        public void UpdateTemperatureLogFile()
+        {
+            try
+            {
+                Settings settings = new Settings();
+                settings.loadSettings();
+
+                using (StreamWriter file = new StreamWriter(@"\SD\" + settings.HistoryFilename, true))
+                {
+                    DateTime recordTime = DateTime.Now;
+
+                    file.Write(recordTime.ToString());
+
+                    file.Write("," + PinManagement.milliVolts.ToString("f4"));
+
+                    file.Write("," + PinManagement.temperatureCelcius.ToString("f4"));
+
+                    file.Write("," + PinManagement.currentTemperature.ToString("f4"));
+
+                    file.Write("," + PinManagement.setTemperature.ToString("f4"));
+
+                    if (PinManagement.isHeating)
+                    {
+                        file.WriteLine(",1");
+                    }
+                    else
+                    {
+                        file.WriteLine(",0");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+        }
+
+        public void UpdateTemeratureDisplay()
+        {
+            _displayController.Clear();
+            _displayController.Home();
+
+            string displayString = "Set Temp: ";
+            displayString += PinManagement.setTemperature.ToString("f2");
+
+            _displayController.Write(displayString);
+
+            displayString = "Cnt Temp: ";
+            displayString += PinManagement.currentTemperature.ToString("f2");
+            if (PinManagement.isHeating)
+            {
+                displayString += " Heat On";
+            }
+            else
+            {
+                displayString += " Heat Off";
+            }
+
+            _displayController.SetCursorPosition(0, 1);
+            _displayController.Write(displayString);
+            Thread.Sleep(1000);
+        }
+
+        public void DisplayText(string message)
+        {
+            _displayController.Clear();
+            _displayController.Home();
+            _displayController.Write(message);
+            Thread.Sleep(1000);            
+        }
+    }
+}

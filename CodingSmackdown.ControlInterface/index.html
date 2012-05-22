@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Coding Smackdown Temperature Logger</title>
+    <link href="Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link href="Content/jquery.jqplot/jquery.jqplot.css" rel="stylesheet" type="text/css" />
+    <link href="Content/SiteStyles.css" rel="stylesheet" type="text/css" />
+
+    <script src="Scripts/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="Scripts/jquery-ui-1.8.19.min.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.jqplot.js" type="text/javascript"></script>
+    <script src="Scripts/codingsmackdown.controlinterface.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            // set up the tabs on the page
+            $("#tabs").tabs();
+            // set up the buttons on the tabs
+            $("#refreshCurrentReading").button();
+            $("#refreshHistory").button();
+            $("#updateSettings").button();
+            // pull the current temp
+            updateCurrentTemp();
+            // pull the history
+            updateHistory();
+            // get the device settings
+            getSettings();
+            // update the graph every 10 minutes
+            setInterval("updateHistory()", 600000);
+        });
+    </script>
+</head>
+<body>
+    <div class="ui-widget">
+        <div id="errorMessageDiv" class="ui-state-error ui-corner-all" style="padding: 0 .7em;
+            display: none;">
+            <div>
+                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+                <strong>Alert:</strong><div id="errorMessage">
+                    Sample ui-state-error style.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-widget">
+        <div id="loadingWidget" class="ui-corner-all" style="padding: 0 .7em; display: none;">
+            <div>
+                <p>
+                    <img alt="Loading  Content" src="ajax-loader.gif" />
+                    Loading</p>
+            </div>
+        </div>
+    </div>
+    <div class="title">
+    <h1>
+        DIY Brewery Temperature Controller</h1></div>
+    <div id="tabs">
+        <ul>
+            <li><a href="#current">Current Readings</a></li>
+            <li><a href="#settings">Settings</a></li>
+        </ul>
+        <div id="current">
+            <fieldset>
+                <h2>
+                    Current Temperature</h2>
+                <div class="setting">
+                    <span class="settinglabel">Time</span> <span class="settingfield" id="timeOfReading">
+                    </span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">Sensor Millivolts</span> <span class="settingfield" id="sensorMilliVolts">
+                    </span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">Degrees Celsius</span> <span class="settingfield" id="tempCelsius">
+                    </span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">Degrees Fahrenheit</span> <span class="settingfield" id="tempFahrenheit">
+                    </span>
+                </div>
+                <div class="clear">
+                    &nbsp;</div>
+                <div id="refreshCurrentReading" onclick="updateCurrentTemp();">
+                    Update Reading</div>
+                <div class="clear">
+                    &nbsp;</div>
+                <h2>
+                    Temperature History</h2>
+                <div id="chartdiv" style="height: 400px; width: 500px;">
+                </div>
+                <div class="clear">
+                    &nbsp;</div>
+                <div id="refreshHistory" onclick="updateHistory();">
+                    Update Chart</div>
+            </fieldset>
+        </div>
+        <div id="settings">
+            <fieldset>
+                <h2>
+                    Recording Settings</h2>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="minutesBetweenReadings">
+                            Minutes between readings</label></span> <span class="settingfield">
+                                <input id="minutesBetweenReadings" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="historyFilename">
+                            History file name</label></span> <span class="settingfield">
+                                <input id="historyFilename" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="temperatureOffset">
+                            Temperature offset</label></span> <span class="settingfield">
+                                <input id="temperatureOffset" type="text" /></span>
+                </div>
+                <h2>
+                    Time Settings</h2>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="ntpServerName">
+                            NTP Server Name</label></span> <span class="settingfield">
+                                <input id="ntpServerName" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="minutesBetweenNTPUpdate">
+                            Minutes between time updates</label></span> <span class="settingfield">
+                                <input id="minutesBetweenNTPUpdate" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="timeZoneOffset">
+                            Time Zone offset in minutes</label></span> <span class="settingfield">
+                                <input id="timeZoneOffset" type="text" /></span>
+                </div>
+                <h2>
+                    Network Settings</h2>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="netbiosName">
+                            NETBIOS Name</label></span> <span class="settingfield">
+                                <input id="netbiosName" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel"><label for="enableDHCP">
+                            Enable DHCP</label></span> <span class="settingfield">
+                                <input id="enableDHCP" type="checkbox" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="staticIPAddress">
+                            Static IP Address</label></span> <span class="settingfield">
+                                <input id="staticIPAddress" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="subnetMask">
+                            Subnet Mask</label></span> <span class="settingfield">
+                                <input id="subnetMask" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="defaultGateway">
+                            Default Gateway</label></span> <span class="settingfield">
+                                <input id="defaultGateway" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="primaryDNSAddress">
+                            Primary DNS Address</label></span> <span class="settingfield">
+                                <input id="primaryDNSAddress" type="text" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="secondaryDNSAddress">
+                            Secondary DNS Address</label></span> <span class="settingfield">
+                                <input id="secondaryDNSAddress" type="text" /></span>
+                </div>
+                <div class="clear">
+                    &nbsp;</div>
+                <div class="setting">
+                    <div id="updateSettings" onclick="updateSettings();">
+                        Update</div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</body>
+</html>

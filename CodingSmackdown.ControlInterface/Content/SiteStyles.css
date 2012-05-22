@@ -1,0 +1,24 @@
+﻿body 
+{
+    font-size:62.5%;
+    font-family: Arial, Helvetica, Sans-Serif;
+    line-height: 2.5em;
+    width: 600px;
+}
+
+.title
+{
+    text-align:center;
+}
+
+.settinglabel 
+{
+    padding: 5px 5px 5px 25px;
+}
+
+.settingfield
+{
+    position:absolute;
+    left: 300px;
+    padding: 5px 5px 5px 5px;
+}
