@@ -33,23 +33,30 @@ namespace CodingSmackdown.Services
                         totalReading += PinManagement.temperatureSensorPort.Read();
                         Thread.Sleep(10);
                     }
+
                     // calculate the temperature
-                    double averageReading = totalReading / 100;
-                    double milliVolts = averageReading * SystemSettings.VoltageReference / 1024;
-                    double vPad = SystemSettings.VoltageReference - milliVolts;
-                    // double circuitCurrent = vPad / SystemSettings.PadResistance;
-                    double circuitCurrent = vPad / 1000000;
-                    double thermResistance = milliVolts / circuitCurrent;
-                    // thermResistance = ((1024 * 1000000) / averageReading) - 1000000;
-                    double Temp;
-                    Temp = -0.01897 + (25.41881 * milliVolts) - (0.42456 * milliVolts * milliVolts) + (0.04365 * milliVolts * milliVolts * milliVolts);
-                    // We divide by our thermistor's resistance at 25C, in this case 10K
-                    // Temp = ElzeKool.exMath.Log(thermResistance / SystemSettings.ResistanceRT);
-                    //Temp = ElzeKool.exMath.Log(thermResistance / 575000);
-                    // Temp = 1 / (SystemSettings.CoefficientA + (SystemSettings.CoefficientB * Temp) + (SystemSettings.CoefficientC * Temp * Temp) + (SystemSettings.CoefficientD * Temp * Temp * Temp));
-                    //Temp = 1 / (0.003354016 + (0.0002744032 * Temp) + (0.0000001375492 * Temp * Temp * Temp));
-                    double tempCelsius = Temp - 9;
-                    double tempFahrenheit = ((tempCelsius * 9) / 5) + 32;
+                    float averageReading = totalReading / 100;
+                    float milliVolts = averageReading * 3300 / 1023;
+                    float tempCelsius = (milliVolts - 500) / 10;
+                    float tempFahrenheit = (float)(tempCelsius * 1.8) + 32;
+                    
+                    //// calculate the temperature
+                    //double averageReading = totalReading / 100;
+                    //double milliVolts = averageReading * SystemSettings.VoltageReference / 1024;
+                    //double vPad = SystemSettings.VoltageReference - milliVolts;
+                    //// double circuitCurrent = vPad / SystemSettings.PadResistance;
+                    //double circuitCurrent = vPad / 1000000;
+                    //double thermResistance = milliVolts / circuitCurrent;
+                    //// thermResistance = ((1024 * 1000000) / averageReading) - 1000000;
+                    //double Temp;
+                    //Temp = -0.01897 + (25.41881 * milliVolts) - (0.42456 * milliVolts * milliVolts) + (0.04365 * milliVolts * milliVolts * milliVolts);
+                    //// We divide by our thermistor's resistance at 25C, in this case 10K
+                    //// Temp = ElzeKool.exMath.Log(thermResistance / SystemSettings.ResistanceRT);
+                    ////Temp = ElzeKool.exMath.Log(thermResistance / 575000);
+                    //// Temp = 1 / (SystemSettings.CoefficientA + (SystemSettings.CoefficientB * Temp) + (SystemSettings.CoefficientC * Temp * Temp) + (SystemSettings.CoefficientD * Temp * Temp * Temp));
+                    ////Temp = 1 / (0.003354016 + (0.0002744032 * Temp) + (0.0000001375492 * Temp * Temp * Temp));
+                    //double tempCelsius = Temp - 9;
+                    //double tempFahrenheit = ((tempCelsius * 9) / 5) + 32;
                     // update the static values
                     PinManagement.milliVolts = (float)milliVolts;
                     PinManagement.currentTemperature = (float)tempFahrenheit;
