@@ -92,7 +92,7 @@ var ajaxDataRenderer = function (url, plot, options) {
             for (var j = 0; j < tempData.length; j += 1) {
 
                 var dataFields = tempData[j].split(',');
-                temperature = parseFloat(dataFields[4]);
+                temperature = parseFloat(dataFields[3]);
                 data.push(temperature);
             }
 

@@ -21,6 +21,10 @@ namespace CodingSmackdown.TemperatureController
     {
         private static Thread mainThread;
         private static OutputHelper _displayHelper = null;
+        private static DateTime engageHeaterButtonLastPushed = DateTime.MinValue;
+        private static DateTime allStopButtonLastPushed = DateTime.MinValue;
+        private static DateTime setTemperatureUpButtonLastPushed = DateTime.MinValue;
+        private static DateTime setTemperatureUpDownLastPushed = DateTime.MinValue;
 
         public static void Main()
         {
@@ -55,6 +59,10 @@ namespace CodingSmackdown.TemperatureController
             UpdateSettingsMethod.UpdateNetworkConfiguration(settings);
 
             _displayHelper.DisplayText("Network Started");
+
+            _displayHelper.DisplayText(UpdateSettingsMethod.GetNetworkIP(settings));
+
+            Thread.Sleep(5000);
 
             Server WebServer = new Server(80);
             WebServer.AddResponse(new JSONResponse("temperature", new JSONResponseCheck(GetTemperatureMethod.GetTemperature)));
@@ -96,17 +104,23 @@ namespace CodingSmackdown.TemperatureController
 
         public static void EngageHeaterButton_OnInterrupt(uint data1, uint data2, DateTime time) 
         {
+            if (engageHeaterButtonLastPushed.AddMilliseconds(50) > time)
+                return;
             // button press state received in data2
             // 0 = open, 1 = pressed
             if (data2 == 1)
             {
                 PinManagement.heaterEngaged = true;
             }
-            _displayHelper.UpdateTemeratureDisplay();
+            _displayHelper.DisplayText("Heater Engaged");
+            engageHeaterButtonLastPushed = time;
         }
 
         public static void TemperatureSetUp_OnInterrupt(uint data1, uint data2, DateTime time)
         {
+            if (setTemperatureUpButtonLastPushed.AddMilliseconds(50) > time)
+                return;
+
             // button press state received in data2
             // 0 = open, 1 = pressed
             if (data2 == 1)
@@ -119,10 +133,13 @@ namespace CodingSmackdown.TemperatureController
                 }
             }
             _displayHelper.UpdateTemeratureDisplay();
+            setTemperatureUpButtonLastPushed = time;
         }
 
         public static void TemperatureSetDown_OnInterrupt(uint data1, uint data2, DateTime time)
         {
+            if (setTemperatureUpDownLastPushed.AddMilliseconds(50) > time)
+                return;
             // button press state received in data2
             // 0 = open, 1 = pressed
             if (data2 == 1)
@@ -135,10 +152,13 @@ namespace CodingSmackdown.TemperatureController
                 }
             }
             _displayHelper.UpdateTemeratureDisplay();
+            setTemperatureUpDownLastPushed = time;
         }
 
         public static void AllStop_OnInterrupt(uint data1, uint data2, DateTime time)
         {
+            if (allStopButtonLastPushed.AddMilliseconds(50) > time)
+                return;
             // button press state received in data2
             // 0 = open, 1 = pressed
             if (data2 == 1)
@@ -146,7 +166,8 @@ namespace CodingSmackdown.TemperatureController
                 PinManagement.heaterOnOffPort.Write(false);
                 PinManagement.heaterEngaged = false;
             }
-            _displayHelper.UpdateTemeratureDisplay();
+            _displayHelper.DisplayText("Heater Dis-Engaged");
+            allStopButtonLastPushed = time;
         }
     }
 }

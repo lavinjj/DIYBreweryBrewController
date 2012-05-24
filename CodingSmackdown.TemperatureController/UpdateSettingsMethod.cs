@@ -142,5 +142,39 @@ namespace CodingSmackdown.TemperatureController
             System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
 
         }
+
+        public static string GetNetworkIP(Settings settings)
+        {
+            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+
+            if (settings.EnableDHCP)
+            {
+                interf.EnableDynamicDns();
+                interf.EnableDhcp();
+                //interf.ReleaseDhcpLease();
+                //interf.RenewDhcpLease();
+            }
+            else
+            {
+                interf.EnableStaticIP(settings.StaticIPAddress, settings.SubnetMask, settings.DefaultGateway);
+                interf.EnableStaticDns(new string[] { settings.PrimaryDNSAddress, settings.SecondaryDNSAddress });
+            }
+
+            interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+            int count = 0;
+
+            while ((interf.IPAddress.Equals("0.0.0.0")) && (count < 100))
+            {
+                Thread.Sleep(1000);
+
+                interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+                count++;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
+
+            return interf.IPAddress;
+
+        }
     }
 }

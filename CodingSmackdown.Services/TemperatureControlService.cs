@@ -73,6 +73,7 @@ namespace CodingSmackdown.Services
                         PinManagement.isHeating = true;
                         // display heat is on
                         _outputHelper.DisplayText("Heat On");
+                        PinManagement.alarmSounded = false;
                     }
                     else
                     {
@@ -88,7 +89,7 @@ namespace CodingSmackdown.Services
                         if ((!PinManagement.alarmSounded) && (temperatureDifference < SystemSettings.TemperatureHeaterOffset))
                         {
                             PinManagement.buzzerPort.Write(true);
-                            Thread.Sleep(1000);
+                            Thread.Sleep(2000);
                             PinManagement.buzzerPort.Write(false);
                             PinManagement.alarmSounded = true;
                         }

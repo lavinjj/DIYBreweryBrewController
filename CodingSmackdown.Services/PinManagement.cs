@@ -24,10 +24,10 @@ namespace CodingSmackdown.Services
         // Don't use a glitch filter
         // Use an external Pull Down resistor to hold the signal low until the switch is pressed.
         // Cause the interrupt to signal when the Pin changes from Low to High and from High to Low
-        static public InterruptPort engageHeaterButton = new InterruptPort(Pins.GPIO_PIN_D1, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeBoth);
-        static public InterruptPort allStopButton = new InterruptPort(Pins.GPIO_PIN_D2, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeBoth);
-        static public InterruptPort setTemperatureUpButton = new InterruptPort(Pins.GPIO_PIN_D3, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeBoth);
-        static public InterruptPort setTemperatureUpDown = new InterruptPort(Pins.GPIO_PIN_D4, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeBoth);
+        static public InterruptPort engageHeaterButton = new InterruptPort(Pins.GPIO_PIN_D1, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
+        static public InterruptPort allStopButton = new InterruptPort(Pins.GPIO_PIN_D2, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
+        static public InterruptPort setTemperatureUpButton = new InterruptPort(Pins.GPIO_PIN_D3, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
+        static public InterruptPort setTemperatureUpDown = new InterruptPort(Pins.GPIO_PIN_D4, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         
         //static public OutputPort Digital5 = new OutputPort(Pins.GPIO_PIN_D5, false);
         //static public OutputPort Digital6 = new OutputPort(Pins.GPIO_PIN_D6, false);
