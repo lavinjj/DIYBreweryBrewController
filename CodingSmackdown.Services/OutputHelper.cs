@@ -82,7 +82,18 @@ namespace CodingSmackdown.Services
         {
             _displayController.Clear();
             _displayController.Home();
-            _displayController.Write(message);
+            // handle two lines being sent to the lcd display
+            if (message.IndexOf('|') > 0)
+            {
+                string[] output = message.Split('|');
+                _displayController.Write(output[0]);
+                _displayController.SetCursorPosition(0, 1);
+                _displayController.Write(output[1]);
+            }
+            else
+            {
+                _displayController.Write(message);
+            }
         }
     }
 }

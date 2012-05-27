@@ -17,7 +17,7 @@ namespace CodingSmackdown.Services
         static public bool alarmSounded = false;
 
         // define an output port that will drive the 12VDC Relay Circuit
-        static public OutputPort heaterOnOffPort = new OutputPort(Pins.GPIO_PIN_D0, false);
+        static public PWM heaterOnOffPort = new PWM(Pins.GPIO_PIN_D9);
         static public OutputPort buzzerPort = new OutputPort(Pins.GPIO_PIN_D5, false);
 
         // Define an Interrupt Port to watch when Pins D1, D2, D3, D4 Change States

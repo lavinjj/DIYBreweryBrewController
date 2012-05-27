@@ -38,20 +38,17 @@ namespace CodingSmackdown.TemperatureController
 
             // set up the LCD's number of columns and rows: 
             lcd.Begin(16, 2);
-
-            // Print a message to the LCD.
-            lcd.Write("DIY Brewery");
-            lcd.SetCursorPosition(0, 1);
-            lcd.Write("Temp Controller");
-
-            Thread.Sleep(1000);
-
+            // create the output helper and attach tot he LCD Display
             _displayHelper = new OutputHelper();
             _displayHelper.DisplayController = lcd;
 
-            _displayHelper.DisplayText("Thread Started");
+            // Print a message to the LCD.
+            _displayHelper.DisplayText("DIY Brewery|Temp Controller");
 
-            _displayHelper.DisplayText("Display Init");
+            Thread.Sleep(1000);
+
+
+            _displayHelper.DisplayText("Thread Started");
 
             Settings settings = new Settings();
             settings.loadSettings();
@@ -163,7 +160,7 @@ namespace CodingSmackdown.TemperatureController
             // 0 = open, 1 = pressed
             if (data2 == 1)
             {
-                PinManagement.heaterOnOffPort.Write(false);
+                PinManagement.heaterOnOffPort.SetDutyCycle(0);
                 PinManagement.heaterEngaged = false;
             }
             _displayHelper.DisplayText("Heater Dis-Engaged");

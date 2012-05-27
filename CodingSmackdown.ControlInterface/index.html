@@ -11,25 +11,8 @@
     <script src="Scripts/jquery.validate.min.js" type="text/javascript"></script>
     <script src="Scripts/jquery.jqGrid.min.js" type="text/javascript"></script>
     <script src="Scripts/jquery.jqplot.js" type="text/javascript"></script>
+    <script src="Scripts/knockout.js" type="text/javascript"></script>
     <script src="Scripts/codingsmackdown.controlinterface.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        $(function () {
-            // set up the tabs on the page
-            $("#tabs").tabs();
-            // set up the buttons on the tabs
-            $("#refreshCurrentReading").button();
-            $("#refreshHistory").button();
-            $("#updateSettings").button();
-            // pull the current temp
-            updateCurrentTemp();
-            // pull the history
-            updateHistory();
-            // get the device settings
-            getSettings();
-            // update the graph every 10 minutes
-            setInterval("updateHistory()", 600000);
-        });
-    </script>
 </head>
 <body>
     <div class="ui-widget">
@@ -64,24 +47,24 @@
                 <h2>
                     Current Temperature</h2>
                 <div class="setting">
-                    <span class="settinglabel">Time</span> <span class="settingfield" id="timeOfReading">
+                    <span class="settinglabel">Time</span> <span class="settingfield" id="timeOfReading" data-bind="text: sensorData().timeOfReading" >
                     </span>
                 </div>
                 <div class="setting">
-                    <span class="settinglabel">Sensor Millivolts</span> <span class="settingfield" id="sensorMilliVolts">
+                    <span class="settinglabel">Sensor Millivolts</span> <span class="settingfield" id="sensorMilliVolts" data-bind="text: sensorData().sensorMilliVolts" >
                     </span>
                 </div>
                 <div class="setting">
-                    <span class="settinglabel">Degrees Celsius</span> <span class="settingfield" id="tempCelsius">
+                    <span class="settinglabel">Degrees Celsius</span> <span class="settingfield" id="tempCelsius" data-bind="text: sensorData().temperatureCelsius" >
                     </span>
                 </div>
                 <div class="setting">
-                    <span class="settinglabel">Degrees Fahrenheit</span> <span class="settingfield" id="tempFahrenheit">
+                    <span class="settinglabel">Degrees Fahrenheit</span> <span class="settingfield" id="tempFahrenheit" data-bind="text: sensorData().temperatureFahrenheit" >
                     </span>
                 </div>
                 <div class="clear">
                     &nbsp;</div>
-                <div id="refreshCurrentReading" onclick="updateCurrentTemp();">
+                <div id="refreshCurrentReading" data-bind="click: updateCurrentTemp()">
                     Update Reading</div>
                 <div class="clear">
                     &nbsp;</div>
@@ -103,19 +86,57 @@
                     <span class="settinglabel">
                         <label for="minutesBetweenReadings">
                             Minutes between readings</label></span> <span class="settingfield">
-                                <input id="minutesBetweenReadings" type="text" /></span>
+                                <input id="minutesBetweenReadings" type="text" data-bind="value: settings().minutesBetweenReadings" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="historyFilename">
                             History file name</label></span> <span class="settingfield">
-                                <input id="historyFilename" type="text" /></span>
+                                <input id="historyFilename" type="text" data-bind="value: settings().historyFilename" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="temperatureOffset">
                             Temperature offset</label></span> <span class="settingfield">
-                                <input id="temperatureOffset" type="text" /></span>
+                                <input id="temperatureOffset" type="text" data-bind="value: settings().temperatureOffset" /></span>
+                </div>
+                <h2>
+                    Temperature Probe Settings</h2>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="padResistance">
+                            Pad Resistance</label></span> <span class="settingfield">
+                                <input id="padResistance" type="text" data-bind="value: settings().padResistance" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="resistanceRT">
+                            Resistance RT</label></span> <span class="settingfield">
+                                <input id="resistanceRT" type="text" data-bind="value: settings().resistanceRT" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="coefficientA">
+                            Coefficient A</label></span> <span class="settingfield">
+                                <input id="coefficientA" type="text" data-bind="value: settings().coefficientA" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="coefficientB">
+                            Coefficient B</label></span> <span class="settingfield">
+                                <input id="coefficientB" type="text" data-bind="value: settings().coefficientB" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="coefficientC">
+                            Coefficient C</label></span> <span class="settingfield">
+                                <input id="coefficientC" type="text" data-bind="value: settings().coefficientC" /></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">
+                        <label for="coefficientD">
+                            Coefficient D</label></span> <span class="settingfield">
+                                <input id="coefficientD" type="text" data-bind="value: settings().coefficientD" /></span>
                 </div>
                 <h2>
                     Time Settings</h2>
@@ -123,19 +144,19 @@
                     <span class="settinglabel">
                         <label for="ntpServerName">
                             NTP Server Name</label></span> <span class="settingfield">
-                                <input id="ntpServerName" type="text" /></span>
+                                <input id="ntpServerName" type="text" data-bind="value: settings().ntpServerName" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="minutesBetweenNTPUpdate">
                             Minutes between time updates</label></span> <span class="settingfield">
-                                <input id="minutesBetweenNTPUpdate" type="text" /></span>
+                                <input id="minutesBetweenNTPUpdate" type="text" data-bind="value: settings().minutesBetweenNTPUpdate" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="timeZoneOffset">
                             Time Zone offset in minutes</label></span> <span class="settingfield">
-                                <input id="timeZoneOffset" type="text" /></span>
+                                <input id="timeZoneOffset" type="text" data-bind="value: settings().timeZoneOffset" /></span>
                 </div>
                 <h2>
                     Network Settings</h2>
@@ -143,47 +164,47 @@
                     <span class="settinglabel">
                         <label for="netbiosName">
                             NETBIOS Name</label></span> <span class="settingfield">
-                                <input id="netbiosName" type="text" /></span>
+                                <input id="netbiosName" type="text" data-bind="value: settings().netbiosName" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel"><label for="enableDHCP">
                             Enable DHCP</label></span> <span class="settingfield">
-                                <input id="enableDHCP" type="checkbox" /></span>
+                                <input id="enableDHCP" type="checkbox" data-bind="checked: settings().enableDHCP" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="staticIPAddress">
                             Static IP Address</label></span> <span class="settingfield">
-                                <input id="staticIPAddress" type="text" /></span>
+                                <input id="staticIPAddress" type="text" data-bind="value: settings().staticIPAddress" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="subnetMask">
                             Subnet Mask</label></span> <span class="settingfield">
-                                <input id="subnetMask" type="text" /></span>
+                                <input id="subnetMask" type="text" data-bind="value: settings().subnetMask" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="defaultGateway">
                             Default Gateway</label></span> <span class="settingfield">
-                                <input id="defaultGateway" type="text" /></span>
+                                <input id="defaultGateway" type="text" data-bind="value: settings().defaultGateway" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="primaryDNSAddress">
                             Primary DNS Address</label></span> <span class="settingfield">
-                                <input id="primaryDNSAddress" type="text" /></span>
+                                <input id="primaryDNSAddress" type="text" data-bind="value: settings().primaryDNSAddress" /></span>
                 </div>
                 <div class="setting">
                     <span class="settinglabel">
                         <label for="secondaryDNSAddress">
                             Secondary DNS Address</label></span> <span class="settingfield">
-                                <input id="secondaryDNSAddress" type="text" /></span>
+                                <input id="secondaryDNSAddress" type="text" data-bind="value: settings().secondaryDNSAddress" /></span>
                 </div>
                 <div class="clear">
                     &nbsp;</div>
                 <div class="setting">
-                    <div id="updateSettings" onclick="updateSettings();">
+                    <div id="updateSettings" data-bind="click: updateSettings()">
                         Update</div>
                 </div>
             </fieldset>

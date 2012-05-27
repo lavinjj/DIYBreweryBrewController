@@ -1,69 +1,136 @@
-﻿function updateCurrentTemp() {
-    // [{"sensorMilliVolts": "711.740", "timeOfReading": "11\/29\/2011 04:09:31", "temperatureFahrenheit": "70.112", "temperatureCelsius": "21.174"}]
-    // show the activity widget
-    $('#loadingWidget').show();
-    // send a request to the server to get the current temperature from the sensor
-    $.getJSON("temperature", "", function (j) {
-        // walk the responses and check to see if there was a failure
-        for (var i = 0; i < j.length; i++) {
-            $("#timeOfReading").html(j[i].timeOfReading);
-            $("#sensorMilliVolts").html(j[i].sensorMilliVolts);
-            $("#tempCelsius").html(j[i].temperatureCelsius);
-            $("#tempFahrenheit").html(j[i].temperatureFahrenheit);
-        }
+﻿// namespace definition
+// define the orderTalk namespace
+var cs = cs || {};
 
-        // hide the activity widget
-        $('#loadingWidget').hide();
-    });
-}
 
-function getSettings() {
-    // [{"netbiosName": "NETDUINOPLUS", "minutesBetweenNTPUpdate": "600000", "ntpServerName": "pool.ntp.org", "historyFilename": "temperatures.txt", "timeZoneOffset": "0", "temperatureOffset": "10", "minutesBetweenReadings": "600000"}]
-    // show the activity widget
-    $('#loadingWidget').show();
-    // send a request to the server to retreive the config values
-    $.getJSON("settings", "", function (j) {
-        // walk the responses and check to see if there was a failure
-        for (var i = 0; i < j.length; i++) {
-            $("#minutesBetweenReadings").val(j[i].minutesBetweenReadings);
-            $("#temperatureOffset").val(j[i].temperatureOffset);
-            $("#historyFilename").val(j[i].historyFilename);
-            $("#ntpServerName").val(j[i].ntpServerName);
-            $("#minutesBetweenNTPUpdate").val(j[i].minutesBetweenNTPUpdate);
-            $("#timeZoneOffset").val(j[i].timeZoneOffset);
-            $("#netbiosName").val(j[i].netbiosName);
-            $("#enableDHCP").attr('checked', j[i].enableDHCP);
-            $("#staticIPAddress").val(j[i].staticIPAddress);
-            $("#subnetMask").val(j[i].subnetMask);
-            $("#defaultGateway").val(j[i].defaultGateway);
-            $("#primaryDNSAddress").val(j[i].primaryDNSAddress);
-            $("#secondaryDNSAddress").val(j[i].secondaryDNSAddress);
-        }
+cs.sensorData = function () {
+    var self = this;
+    self.timeOfReading = ko.observable('');
+    self.sensorMilliVolts = ko.observable('');
+    self.temperatureCelsius = ko.observable('');
+    self.temperatureFahrenheit = ko.observable('');
+};
 
-        // hide the activity widget
-        $('#loadingWidget').hide();
-    });
-}
+// [{"sensorMilliVolts": "711.740", "timeOfReading": "11\/29\/2011 04:09:31", "temperatureFahrenheit": "70.112", "temperatureCelsius": "21.174"}]
+cs.sensorDataFromWire = function (sensorData) {
+    var self = this;
+    self.timeOfReading = ko.observable(sensorData.timeOfReading);
+    self.sensorMilliVolts = ko.observable(sensorData.sensorMilliVolts);
+    self.temperatureCelsius = ko.observable(sensorData.temperatureCelsius);
+    self.temperatureFahrenheit = ko.observable(sensorData.temperatureFahrenheit);
+};
 
-function updateSettings() {
-    // show the activity widget
-    $('#loadingWidget').show();
+cs.settingsData = function () {
+    var self = this;
+    self.netbiosName = ko.observable('');
+    self.minutesBetweenNTPUpdate = ko.observable('');
+    self.ntpServerName = ko.observable('');
+    self.historyFilename = ko.observable('');
+    self.timeZoneOffset = ko.observable('');
+    self.temperatureOffset = ko.observable('');
+    self.minutesBetweenReadings = ko.observable('');
+    self.enableDHCP = ko.observable('');
+    self.staticIPAddress = ko.observable('');
+    self.subnetMask = ko.observable('');
+    self.defaultGateway = ko.observable('');
+    self.primaryDNSAddress = ko.observable('');
+    self.secondaryDNSAddress = ko.observable('');
+    self.voltageReference = ko.observable('');
+    self.padResistance = ko.observable('');
+    self.resistanceRT = ko.observable('');
+    self.coefficientA = ko.observable('');
+    self.coefficientB = ko.observable('');
+    self.coefficientC = ko.observable('');
+    self.coefficientD = ko.observable('');
+};
 
-    // send a request to the server to update the config values
-    $.getJSON("updateSettings", { minutesBetweenReadings: $("#minutesBetweenReadings").val(), temperatureOffset: $("#temperatureOffset").val(), historyFilename: $("#historyFilename").val(),
-        ntpServerName: $("#ntpServerName").val(), minutesBetweenNTPUpdate: $("#minutesBetweenNTPUpdate").val(), timeZoneOffset: $("#timeZoneOffset").val(),
-        netbiosName: $("#netbiosName").val(), enableDHCP: $("#enableDHCP").val(), staticIPAddress: $("#staticIPAddress").val(), subnetMask: $("#subnetMask").val(),
-        defaultGateway: $("#defaultGateway").val(), primaryDNSAddress: $("#primaryDNSAddress").val(), secondaryDNSAddress: $("#secondaryDNSAddress").val()
-    }, function (j) {
+// [{"netbiosName": "NETDUINOPLUS", "minutesBetweenNTPUpdate": "600000", "ntpServerName": "pool.ntp.org", "historyFilename": "temperatures.txt", "timeZoneOffset": "0", 
+// "temperatureOffset": "10", "minutesBetweenReadings": "600000", "enableDHCP": "true", "staticIPAddress": "0.0.0.0", "subnetMask": "255.255.255.0", "defaultGateway": "0.0.0.0", 
+// "primaryDNSAddress": "192.168.1.1", "secondaryDNSAddress": "0.0.0.0", "voltageReference" : "3.3" , "padResistance" : "10000", "resistanceRT" : "10000",
+// "coefficientA" : "0.003354016", "coefficientB" : "0.0002744032", "coefficientC" : "0.000003666944", "coefficientD" : "0.0000001375492"}]
+cs.settingsDataFromWire = function (settings) {
+    var self = this;
+    self.netbiosName = ko.observable(settings.netbiosName);
+    self.minutesBetweenNTPUpdate = ko.observable(settings.minutesBetweenNTPUpdate);
+    self.ntpServerName = ko.observable(settings.ntpServerName);
+    self.historyFilename = ko.observable(settings.historyFilename);
+    self.timeZoneOffset = ko.observable(settings.timeZoneOffset);
+    self.temperatureOffset = ko.observable(settings.temperatureOffset);
+    self.minutesBetweenReadings = ko.observable(settings.minutesBetweenReadings);
+    self.enableDHCP = ko.observable(settings.enableDHCP);
+    self.staticIPAddress = ko.observable(settings.staticIPAddress);
+    self.subnetMask = ko.observable(settings.subnetMask);
+    self.defaultGateway = ko.observable(settings.defaultGateway);
+    self.primaryDNSAddress = ko.observable(settings.primaryDNSAddress);
+    self.secondaryDNSAddress = ko.observable(settings.secondaryDNSAddress);
+    self.voltageReference = ko.observable(settings.voltageReference);
+    self.padResistance = ko.observable(settings.padResistance);
+    self.resistanceRT = ko.observable(settings.resistanceRT);
+    self.coefficientA = ko.observable(settings.coefficientA);
+    self.coefficientB = ko.observable(settings.coefficientB);
+    self.coefficientC = ko.observable(settings.coefficientC);
+    self.coefficientD = ko.observable(settings.coefficientD);
+};
 
-        // hide the activity widget
-        $('#loadingWidget').hide();
+cs.viewModel = function () {
+    // private data
+    sensorData = ko.observable(new cs.sensorData()),
+    settings = ko.observable(new cs.settingsData()),
 
-        $('#errorMessage').html('Please wait while the Temperature Logger reboots and applies the new settings.');
-        $('#errorMessageDiv').style('display: block;');
+    // methods
+    updateCurrentTemp = function () {
+        // show the activity widget
+        $('#loadingWidget').show();
+        // send a request to the server to get the current temperature from the sensor
+        $.getJSON('temperature', '', function (j) {
+            // walk the responses and check to see if there was a failure
+            for (var i = 0; i < j.length; i++) {
+                sensorData(new cs.sensorDataFromWire(j[i]));
+            }
+            // hide the activity widget
+            $('#loadingWidget').hide();
+        });
+    },
 
-    });
-}
+    getSettings = function () {
+        // show the activity widget
+        $('#loadingWidget').show();
+        // send a request to the server to retreive the config values
+        $.getJSON('settings', '', function (j) {
+            // walk the responses and check to see if there was a failure
+            for (var i = 0; i < j.length; i++) {
+                settings(new cs.settingsDataFromWire(j[i]));
+            }
+            // hide the activity widget
+            $('#loadingWidget').hide();
+        });
+    },
+
+    updateSettings = function () {
+        // show the activity widget
+        $('#loadingWidget').show();
+
+        // send a request to the server to update the config values
+        $.getJSON('updateSettings', ko.toJSON(settings), function (j) {
+
+            // hide the activity widget
+            $('#loadingWidget').hide();
+
+            $('#errorMessage').html('Please wait while the Temperature Logger reboots and applies the new settings.');
+            $('#errorMessageDiv').style('display: block;');
+
+        });
+    };
+
+    return {
+        sensorData: sensorData,
+        settings: settings,
+        updateCurrentTemp: updateCurrentTemp,
+        getSettings: getSettings,
+        updateSettings: updateSettings
+    };
+} ();
+
 
 // Our ajax data renderer which here retrieves a text file.
 // it could contact any source and pull data, however.
@@ -108,7 +175,7 @@ function updateHistory() {
     $('#loadingWidget').show();
 
     // The url for our json data
-    var jsonurl = "temperatures.txt";
+    var jsonurl = 'temperatures.txt';
 
     // passing in the url string as the jqPlot data argument is a handy
     // shortcut for our renderer.  You could also have used the
@@ -123,3 +190,19 @@ function updateHistory() {
     // hide the activity widget
     $('#loadingWidget').hide();
 }
+
+$(document).ready(function () {
+    // set up the tabs on the page
+    $('#tabs').tabs();
+    // set up the buttons on the tabs
+    $('#refreshCurrentReading').button();
+    $('#refreshHistory').button();
+    $('#updateSettings').button();
+    cs.viewModel.getSettings();
+    cs.viewModel.updateCurrentTemp();
+    ko.applyBindings(cs.viewModel);
+    // pull the history
+    updateHistory();
+    // update the graph every 10 minutes
+    setInterval('updateHistory()', 30000);
+});
