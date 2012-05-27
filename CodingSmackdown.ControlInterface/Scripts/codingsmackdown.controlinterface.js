@@ -111,7 +111,15 @@ cs.viewModel = function () {
         $('#loadingWidget').show();
 
         // send a request to the server to update the config values
-        $.getJSON('updateSettings', ko.toJSON(settings), function (j) {
+        $.getJSON("updateSettings", { minutesBetweenReadings: settings().minutesBetweenReadings(), temperatureOffset: settings().temperatureOffset(),
+            historyFilename: settings().historyFilename(), ntpServerName: settings().ntpServerName(), minutesBetweenNTPUpdate: settings().minutesBetweenNTPUpdate(),
+            timeZoneOffset: settings().timeZoneOffset(), netbiosName: settings().netbiosName(), enableDHCP: settings().enableDHCP(),
+            staticIPAddress: settings().staticIPAddress(), subnetMask: settings().subnetMask(), defaultGateway: settings().defaultGateway(), 
+            primaryDNSAddress: settings().primaryDNSAddress(), secondaryDNSAddress: settings().secondaryDNSAddress(),
+            voltageReference : settings().voltageReference(), padResistance : settings().padResistance(), resistanceRT : settings().resistanceRT(),
+            coefficientA : settings().coefficientA(), coefficientB : settings.coefficientB(), coefficientC : settings.coefficientC(),
+            coefficientD: settings().coefficientD()
+        }, function (j) {
 
             // hide the activity widget
             $('#loadingWidget').hide();

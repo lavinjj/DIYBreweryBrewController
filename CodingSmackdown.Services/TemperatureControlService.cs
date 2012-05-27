@@ -35,25 +35,28 @@ namespace CodingSmackdown.Services
                     }
 
                     // calculate the temperature
-                    float averageReading = totalReading / 100;
-                    float milliVolts = averageReading * 3300 / 1023;
-                    float tempCelsius = (milliVolts - 500) / 10;
-                    float tempFahrenheit = (float)(tempCelsius * 1.8) + 32;
+                    //float averageReading = totalReading / 100;
+                    //float milliVolts = averageReading * 3300 / 1023;
+                    //float tempCelsius = (milliVolts - 500) / 10;
+                    //float tempFahrenheit = (float)(tempCelsius * 1.8) + 32;
 
                     // calculate the temperature
-                    //double averageReading = totalReading / 100;
-                    //double milliVolts = averageReading * SystemSettings.VoltageReference / 1023;
-                    //double vPad = SystemSettings.VoltageReference - milliVolts;
-                    //double circuitCurrent = vPad / SystemSettings.PadResistance;
-                    //double thermResistance = milliVolts / circuitCurrent;
-                    //double Temp;
+                    double averageReading = totalReading / 100;
+                    // double milliVolts = averageReading * SystemSettings.VoltageReference / 1023;
+                    double milliVolts = averageReading * 3.3 / 1023;
+                    // double vPad = SystemSettings.VoltageReference - milliVolts;
+                    double vPad = 3.3 - milliVolts;
+                    // double circuitCurrent = vPad / SystemSettings.PadResistance;
+                    double circuitCurrent = vPad / 1470000;
+                    double thermResistance = milliVolts / circuitCurrent;
+                    double Temp;
                     //// We divide by our thermistor's resistance at 25C, in this case 10K
-                    //Temp = ElzeKool.exMath.Log(thermResistance / SystemSettings.ResistanceRT);
-                    ////Temp = ElzeKool.exMath.Log(thermResistance / 575000);
-                    //Temp = 1 / (0.003354016 + (0.0002909670 * Temp) + (0.000001632136 * Temp * Temp) + (0.00000007192200 * Temp * Temp * Temp));
+                    // Temp = ElzeKool.exMath.Log(thermResistance / SystemSettings.ResistanceRT);
+                    Temp = ElzeKool.exMath.Log(thermResistance / 1500000);
+                    Temp = 1 / (0.003354016 + (0.0002909670 * Temp) + (0.000001632136 * Temp * Temp) + (0.00000007192200 * Temp * Temp * Temp));
                     ////Temp = 1 / (0.003354016 + (0.0002744032 * Temp) + (0.0000001375492 * Temp * Temp * Temp));
-                    //double tempCelsius = Temp - 274.15;
-                    //double tempFahrenheit = (tempCelsius * 1.8) + 32;
+                    double tempCelsius = Temp - 274.15;
+                    double tempFahrenheit = (tempCelsius * 1.8) + 32;
                     // update the static values
                     PinManagement.milliVolts = (float)milliVolts;
                     PinManagement.currentTemperature = (float)tempFahrenheit;

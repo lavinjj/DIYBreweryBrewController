@@ -48,7 +48,7 @@ namespace CodingSmackdown.TemperatureController
             Thread.Sleep(1000);
 
 
-            _displayHelper.DisplayText("Thread Started");
+            _displayHelper.DisplayText("Loading Settings");
 
             Settings settings = new Settings();
             settings.loadSettings();

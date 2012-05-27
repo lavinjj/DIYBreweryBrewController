@@ -64,7 +64,7 @@
                 </div>
                 <div class="clear">
                     &nbsp;</div>
-                <div id="refreshCurrentReading" data-bind="click: updateCurrentTemp()">
+                <div id="refreshCurrentReading" data-bind="click: function() {  cs.viewModel.updateCurrentTemp(); }">
                     Update Reading</div>
                 <div class="clear">
                     &nbsp;</div>
@@ -204,7 +204,7 @@
                 <div class="clear">
                     &nbsp;</div>
                 <div class="setting">
-                    <div id="updateSettings" data-bind="click: updateSettings()">
+                    <div id="updateSettings" data-bind="click: function() { cs.viewModel.updateSettings(); }">
                         Update</div>
                 </div>
             </fieldset>
