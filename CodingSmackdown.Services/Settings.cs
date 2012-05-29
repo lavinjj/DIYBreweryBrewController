@@ -7,6 +7,7 @@ namespace CodingSmackdown.Services
     public class Settings
     {
         public const string SETTINGS_FILE = @"\SD\settings.txt";
+        public const string PROBE_FILE = @"\SD\probe.txt";
         public const int MINUTES_MULTIPLIER = 60000;
 
         private int timeZoneOffset;
@@ -256,6 +257,35 @@ namespace CodingSmackdown.Services
                                     case "SecondaryDNSAddress":
                                         SecondaryDNSAddress = setting[1];
                                         break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            try
+            {
+                using (StreamReader file = new StreamReader(PROBE_FILE))
+                {
+                    string line;
+                    string[] setting;
+                    // Read and display lines from the file until the end of 
+                    // the file is reached.
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        if (line != String.Empty)
+                        {
+                            float tempValue = 0.0F;
+                            setting = line.Split('=');
+                            if ((setting != null) && (setting.Length > 1))
+                            {
+                                switch (setting[0])
+                                {
                                     case "VoltageReference":
                                         if (TryParseFloat(setting[1], out tempValue))
                                         {
@@ -357,7 +387,17 @@ namespace CodingSmackdown.Services
 
                     file.Write("SecondaryDNSAddress=");
                     file.WriteLine(SecondaryDNSAddress);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
 
+            try
+            {
+                using (StreamWriter file = new StreamWriter(PROBE_FILE, false))
+                {
                     file.Write("VoltageReference=");
                     file.WriteLine(VoltageReference);
 

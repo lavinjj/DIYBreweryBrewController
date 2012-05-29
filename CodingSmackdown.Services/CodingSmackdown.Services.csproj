@@ -32,6 +32,8 @@
   <ItemGroup>
     <Compile Include="Debug.cs" />
     <Compile Include="exMath.cs" />
+    <Compile Include="MashProfileControlService.cs" />
+    <Compile Include="MashStep.cs" />
     <Compile Include="NameService.cs" />
     <Compile Include="NTPTimeService.cs" />
     <Compile Include="OutputHelper.cs" />

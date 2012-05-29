@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Text;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using SecretLabs.NETMF.Hardware;
@@ -48,14 +49,16 @@ namespace CodingSmackdown.TemperatureController
             Thread.Sleep(1000);
 
 
-            _displayHelper.DisplayText("Loading Settings");
+            _displayHelper.DisplayText("Loading|Settings");
 
             Settings settings = new Settings();
             settings.loadSettings();
 
+            _displayHelper.HistoryFileName = settings.HistoryFilename;
+
             UpdateSettingsMethod.UpdateNetworkConfiguration(settings);
 
-            _displayHelper.DisplayText("Network Started");
+            _displayHelper.DisplayText("Network|Started");
 
             _displayHelper.DisplayText(UpdateSettingsMethod.GetNetworkIP(settings));
 
@@ -66,20 +69,20 @@ namespace CodingSmackdown.TemperatureController
             WebServer.AddResponse(new JSONResponse("settings", new JSONResponseCheck(GetSettingsMethod.GetSettings)));
             WebServer.AddResponse(new JSONResponse("updateSettings", new JSONResponseCheck(UpdateSettingsMethod.UpdateSettings)));
 
-            _displayHelper.DisplayText("Web Started");
+            _displayHelper.DisplayText("Web Server|Started");
 
             NTPTimeService timeService = new NTPTimeService();
             timeService.SystemSettings = settings;
             timeService.Start();
 
-            _displayHelper.DisplayText("NTP Started");
+            _displayHelper.DisplayText("Internet Time|Service Started");
 
             Thread.Sleep(5000);
 
             NameService nameService = new NameService();
             nameService.AddName(settings.NetBiosName, NameService.NameType.Unique, NameService.MsSuffix.Default);
 
-            _displayHelper.DisplayText("NETBIOS Started");
+            _displayHelper.DisplayText("NETBIOS Service|Started");
 
             Thread.Sleep(5000);
 
@@ -87,14 +90,14 @@ namespace CodingSmackdown.TemperatureController
             tempLogger.SystemSettings = settings;
             tempLogger.Start();
 
-            _displayHelper.DisplayText("Temp Started");
+            _displayHelper.DisplayText("Temp Monitor|Started");
 
             PinManagement.engageHeaterButton.OnInterrupt += new NativeEventHandler(EngageHeaterButton_OnInterrupt);
             PinManagement.setTemperatureUpButton.OnInterrupt += new NativeEventHandler(TemperatureSetUp_OnInterrupt);
             PinManagement.setTemperatureUpDown.OnInterrupt += new NativeEventHandler(TemperatureSetDown_OnInterrupt);
             PinManagement.allStopButton.OnInterrupt += new NativeEventHandler(AllStop_OnInterrupt);
 
-            _displayHelper.DisplayText("Input Started");
+            _displayHelper.DisplayText("Inputs|Active");
 
             mainThread.Suspend();
         }
@@ -109,7 +112,7 @@ namespace CodingSmackdown.TemperatureController
             {
                 PinManagement.heaterEngaged = true;
             }
-            _displayHelper.DisplayText("Heater Engaged");
+            _displayHelper.DisplayText("Heater|Engaged");
             engageHeaterButtonLastPushed = time;
         }
 
@@ -129,7 +132,12 @@ namespace CodingSmackdown.TemperatureController
                     PinManagement.setTemperature = 300.0F;
                 }
             }
-            _displayHelper.UpdateTemeratureDisplay();
+
+            StringBuilder message = new StringBuilder();
+            message.Append("Set Temp|");
+            message.Append(PinManagement.setTemperature.ToString("f2"));
+            _displayHelper.DisplayText(message.ToString());
+
             setTemperatureUpButtonLastPushed = time;
         }
 
@@ -148,7 +156,12 @@ namespace CodingSmackdown.TemperatureController
                     PinManagement.setTemperature = 0.0F;
                 }
             }
-            _displayHelper.UpdateTemeratureDisplay();
+            
+            StringBuilder message = new StringBuilder();
+            message.Append("Set Temp|");
+            message.Append(PinManagement.setTemperature.ToString("f2"));
+            _displayHelper.DisplayText(message.ToString());
+
             setTemperatureUpDownLastPushed = time;
         }
 
@@ -160,10 +173,11 @@ namespace CodingSmackdown.TemperatureController
             // 0 = open, 1 = pressed
             if (data2 == 1)
             {
-                PinManagement.heaterOnOffPort.SetDutyCycle(0);
+                // PinManagement.heaterOnOffPort.SetDutyCycle(0);
+                PinManagement.heaterOnOffPort.Write(false);
                 PinManagement.heaterEngaged = false;
             }
-            _displayHelper.DisplayText("Heater Dis-Engaged");
+            _displayHelper.DisplayText("Heater|Dis-Engaged");
             allStopButtonLastPushed = time;
         }
     }
