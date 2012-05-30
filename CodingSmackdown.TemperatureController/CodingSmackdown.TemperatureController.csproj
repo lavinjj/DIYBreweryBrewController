@@ -38,6 +38,7 @@
     <Compile Include="GetTemperatureMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="UpdateMashProfileMethod.cs" />
     <Compile Include="UpdateSettingsMethod.cs" />
   </ItemGroup>
   <ItemGroup>

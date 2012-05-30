@@ -23,9 +23,14 @@ namespace CodingSmackdown.TemperatureController
                 reading.Add("sensorMilliVolts", PinManagement.milliVoltsSensor1.ToString("f4"));
                 reading.Add("temperatureCelsius", PinManagement.temperatureCelciusSensor1.ToString("f2"));
                 reading.Add("temperatureFahrenheit", PinManagement.currentTemperatureSensor1.ToString("f2"));
-                reading.Add("sensorMilliVolts2", PinManagement.milliVoltsSensor2.ToString("f4"));
-                reading.Add("temperatureCelsius2", PinManagement.temperatureCelciusSensor2.ToString("f2"));
-                reading.Add("temperatureFahrenheit2", PinManagement.currentTemperatureSensor2.ToString("f2"));
+                reading.Add("isHeating", PinManagement.isHeating.ToString());
+
+                if((PinManagement.mashSteps != null) && (PinManagement.mashSteps.CurrentStep != null))
+                {
+                    reading.Add("currentMashStep", PinManagement.mashSteps.CurrentStep.StepNumber.ToString());
+                    reading.Add("currentMashTemp", PinManagement.mashSteps.CurrentStep.Temperature.ToString("f2"));
+                    reading.Add("currentMashTime", PinManagement.mashSteps.CurrentStep.Time.ToString());
+                }
 
                 h.Add(reading);
             }

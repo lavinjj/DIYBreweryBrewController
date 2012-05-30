@@ -1,6 +1,6 @@
 TimeZoneOffset=0
 MinutesBetweenReadings=0.50
-TemperatureOffset=0.00
+TemperatureOffset=-1.00
 TemperatureHeaterOffset=1.00
 HistoryFilename=temperatures.txt
 NTPServerName=pool.ntp.org

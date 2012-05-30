@@ -48,9 +48,14 @@ namespace CodingSmackdown.Services
             _index = 0;
             MashStep result = null;
 
-            if((_steps != null) && (_steps.Count > 0))
+            if ((_steps != null) && (_steps.Count > 0))
             {
                 result = (MashStep)_steps[_index];
+                _currentStep = result;
+            }
+            else
+            {
+                _currentStep = null; ;
             }
 
             return result;
@@ -64,6 +69,11 @@ namespace CodingSmackdown.Services
             if ((_steps != null) && (_index < _steps.Count))
             {
                 result = (MashStep)_steps[_index];
+                _currentStep = result;
+            }
+            else
+            {
+                _currentStep = null; ;
             }
 
             return result;

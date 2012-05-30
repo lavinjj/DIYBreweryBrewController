@@ -36,6 +36,13 @@ namespace CodingSmackdown.TemperatureController
                 settingsValues.Add("defaultGateway", settings.DefaultGateway);
                 settingsValues.Add("primaryDNSAddress", settings.PrimaryDNSAddress);
                 settingsValues.Add("secondaryDNSAddress", settings.SecondaryDNSAddress);
+                settingsValues.Add("voltageReference", settings.VoltageReference);
+                settingsValues.Add("padResistance", settings.PadResistance);
+                settingsValues.Add("resistanceRT", settings.ResistanceRT);
+                settingsValues.Add("coefficientA", settings.CoefficientA);
+                settingsValues.Add("coefficientB", settings.CoefficientB);
+                settingsValues.Add("coefficientC", settings.CoefficientC);
+                settingsValues.Add("coefficientD", settings.CoefficientD);
 
                 h.Add(settingsValues);
             }

@@ -45,12 +45,6 @@ namespace CodingSmackdown.Services
 
                     file.Write("," + PinManagement.setTemperature.ToString("f4"));
 
-                    file.Write("," + PinManagement.milliVoltsSensor2.ToString("f4"));
-
-                    file.Write("," + PinManagement.temperatureCelciusSensor2.ToString("f4"));
-
-                    file.Write("," + PinManagement.currentTemperatureSensor2.ToString("f4"));
-
                     if (PinManagement.isHeating)
                     {
                         file.WriteLine(",1");
@@ -85,27 +79,6 @@ namespace CodingSmackdown.Services
                 displayString = new StringBuilder();
                 displayString.Append("Cnt Temp: ");
                 displayString.Append(PinManagement.currentTemperatureSensor1.ToString("f2"));
-                _displayController.SetCursorPosition(0, 1);
-                _displayController.Write(displayString.ToString());
-            }
-        }
-
-        public void DisplaySensorTemperatures()
-        {
-            lock (s_IncLock)
-            {
-                _displayController.Clear();
-                _displayController.Home();
-
-                StringBuilder displayString = new StringBuilder();
-                displayString.Append("Sensor 1: ");
-                displayString.Append(PinManagement.currentTemperatureSensor1.ToString("f2"));
-
-                _displayController.Write(displayString.ToString());
-
-                displayString = new StringBuilder();
-                displayString.Append("Sensor 2: ");
-                displayString.Append(PinManagement.currentTemperatureSensor2.ToString("f2"));
                 _displayController.SetCursorPosition(0, 1);
                 _displayController.Write(displayString.ToString());
             }

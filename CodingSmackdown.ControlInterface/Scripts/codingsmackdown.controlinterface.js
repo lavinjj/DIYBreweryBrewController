@@ -9,6 +9,10 @@ cs.sensorData = function () {
     self.sensorMilliVolts = ko.observable('');
     self.temperatureCelsius = ko.observable('');
     self.temperatureFahrenheit = ko.observable('');
+    self.isHeating = ko.observable('');
+    self.currentMashStep = ko.observable('');
+    self.currentMashTemp = ko.observable('');
+    self.currentMashTime = ko.observable('');
 };
 
 // [{"sensorMilliVolts": "711.740", "timeOfReading": "11\/29\/2011 04:09:31", "temperatureFahrenheit": "70.112", "temperatureCelsius": "21.174"}]
@@ -18,6 +22,25 @@ cs.sensorDataFromWire = function (sensorData) {
     self.sensorMilliVolts = ko.observable(sensorData.sensorMilliVolts);
     self.temperatureCelsius = ko.observable(sensorData.temperatureCelsius);
     self.temperatureFahrenheit = ko.observable(sensorData.temperatureFahrenheit);
+    self.isHeating = ko.observable(sensorData.isHeating);
+    if (sensorData.currentMashStep !== undefined) {
+        self.currentMashStep = ko.observable(sensorData.currentMashStep);
+    }
+    else {
+        self.currentMashStep = ko.observable('');
+    }
+    if (sensorData.currentMashTemp !== undefined) {
+        self.currentMashTemp = ko.observable(sensorData.currentMashTemp);
+    }
+    else {
+        self.currentMashTemp = ko.observable('');
+    }
+    if (sensorData.currentMashTime !== undefined) {
+        self.currentMashTime = ko.observable(sensorData.currentMashTime);
+    }
+    else {
+        self.currentMashTime = ko.observable('');
+    }
 };
 
 cs.settingsData = function () {
@@ -81,9 +104,9 @@ cs.viewModel = function () {
     mashStepLength = ko.observable(''),
 
     gridViewModel = new ko.simpleGrid.viewModel({
-        data: mashProfile,
+        data: this.mashProfile,
         columns: [
-        { headerText: "Step Number", rowText: "step" },
+        { headerText: "Step", rowText: "step" },
         { headerText: "Temperature", rowText: "temperature" },
         { headerText: "Length", rowText: "minutes" }
         ],
@@ -91,12 +114,12 @@ cs.viewModel = function () {
     }),
 
     addItem = function () {
-        var step = mashProfile().length;
-        mashProfile().push({ step: step, temperature: mashTemperature(), minutes: mashStepLength() });
+        var stepNumber = mashProfile().length;
+        mashProfile.push({ step: stepNumber, temperature: mashTemperature(), minutes: mashStepLength() });
     },
 
     jumpToFirstPage = function () {
-        this.gridViewModel.currentPageIndex(0);
+        gridViewModel.currentPageIndex(0);
     },
 
     // methods
@@ -150,6 +173,30 @@ cs.viewModel = function () {
             $('#errorMessageDiv').style('display: block;');
 
         });
+    },
+
+    updateMashProfile = function () {
+        var dataString = '';
+
+        for (var i = 0; i < mashProfile().length; i++) {
+            dataString = dataString + mashProfile()[i].step + ':' + mashProfile()[i].temperature + ':' + mashProfile()[i].minutes + ',';
+        }
+
+
+        // show the activity widget
+        $('#loadingWidget').show();
+
+        // send a request to the server to update the config values
+        $.getJSON("updateMashProfile", { mashProfile: dataString }, function (j) {
+
+            // hide the activity widget
+            $('#loadingWidget').hide();
+
+            $('#errorMessage').html('Please wait while the Temperature Logger reboots and applies the new settings.');
+            $('#errorMessageDiv').style('display: block;');
+
+        });
+
     };
 
     return {
@@ -163,7 +210,8 @@ cs.viewModel = function () {
         mashStepLength: mashStepLength,
         gridViewModel: gridViewModel,
         addItem: addItem,
-        jumpToFirstPage: jumpToFirstPage
+        jumpToFirstPage: jumpToFirstPage,
+        updateMashProfile: updateMashProfile
     };
 } ();
 
@@ -236,6 +284,7 @@ $(document).ready(function () {
     $('#updateSettings').button();
     $('#updateProbeSettings').button();
     $('#addMashStep').button();
+    $('#updateMashProfile').button();
     cs.viewModel.getSettings();
     cs.viewModel.updateCurrentTemp();
     ko.applyBindings(cs.viewModel);

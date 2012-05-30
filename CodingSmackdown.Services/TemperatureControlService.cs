@@ -55,7 +55,6 @@ namespace CodingSmackdown.Services
                 try
                 {
                     float totalReadingSensor1 = 0;
-                    float totalReadingSensor2 = 0;
                     // read the sensor 100 times and add up the value
                     // so we can get an average reading
                     for (int i = 0; i < 100; i++)
@@ -63,24 +62,6 @@ namespace CodingSmackdown.Services
                         totalReadingSensor1 += PinManagement.temperatureSensorPort.Read();
                         Thread.Sleep(10);
                     }
-
-                    // read the sensor 100 times and add up the value
-                    // so we can get an average reading
-                    for (int i = 0; i < 100; i++)
-                    {
-                        totalReadingSensor2 += PinManagement.temperatureSensorPort2.Read();
-                        Thread.Sleep(10);
-                    }
-
-                    // calculate the temperature
-                    float averageReadingSensor2 = totalReadingSensor2 / 100;
-                    float milliVoltsSensor2 = averageReadingSensor2 * 3300 / 1023;
-                    float tempCelsiusSensor2 = (milliVoltsSensor2 - 500) / 10;
-                    float tempFahrenheitSensor2 = (float)(tempCelsiusSensor2 * 1.8) + 32 + SystemSettings.TemperatureOffset;
-                    PinManagement.milliVoltsSensor2 = milliVoltsSensor2;
-                    PinManagement.temperatureCelciusSensor2 = tempCelsiusSensor2;
-                    PinManagement.currentTemperatureSensor2 = tempFahrenheitSensor2;
-
                     // calculate the temperature
                     double averageReading = totalReadingSensor1 / 100;
                     // double milliVolts = averageReading * SystemSettings.VoltageReference / 1023;
@@ -91,12 +72,7 @@ namespace CodingSmackdown.Services
                     double circuitCurrent = vPad / 1470000;
                     double thermResistance = milliVolts / circuitCurrent;
                     PinManagement.resistanceSensor1 = thermResistance;
-                    //double Temp;
-                    //// We divide by our thermistor's resistance at 25C, in this case 10K
-                    // Temp = ElzeKool.exMath.Log(thermResistance / SystemSettings.ResistanceRT);
-                    //Temp = ElzeKool.exMath.Log(thermResistance / 1500000);
-                    //Temp = 1 / (0.003354016 + (0.0002909670 * Temp) + (0.000001632136 * Temp * Temp) + (0.00000007192200 * Temp * Temp * Temp));
-                    ////Temp = 1 / (0.003354016 + (0.0002744032 * Temp) + (0.0000001375492 * Temp * Temp * Temp));
+                    // calc the temperature based on the resistance
                     double tempCelsius = rtot(thermResistance);
                     double tempFahrenheit = (tempCelsius * 1.8) + 32 + SystemSettings.TemperatureOffset;
                     // update the static values
@@ -111,29 +87,6 @@ namespace CodingSmackdown.Services
                     if ((PinManagement.heaterEngaged) && (PinManagement.currentTemperatureSensor1 < PinManagement.setTemperature) && (temperatureDifference > SystemSettings.TemperatureHeaterOffset))
                     {
                         PinManagement.heaterOnOffPort.Write(true);
-                        //// change the duty cycle based on the temperature difference
-                        //if (temperatureDifference > 10)
-                        //{
-                        //    // if the temperature difference is greater than 10 degrees
-                        //    // set the port to 100% duty cycle always on
-                        //    PinManagement.heaterOnOffPort.SetDutyCycle(100);
-                        //    _outputHelper.DisplayText("Duty Cycle 100%");
-                        //}
-                        //else if ((temperatureDifference < 10) && (temperatureDifference > 2))
-                        //{
-                        //    // if the temperature difference is between 10 to 2 degrees
-                        //    // set the port to 50% duty cycle on 50% of the time
-                        //    PinManagement.heaterOnOffPort.SetDutyCycle(50);
-                        //    _outputHelper.DisplayText("Duty Cycle 50%");
-                        //}
-                        //else
-                        //{
-                        //    // if the temperature is within 2 degrees or less
-                        //    // set the port to 25% duty cycle alwayas on
-                        //    PinManagement.heaterOnOffPort.SetDutyCycle(25);
-                        //    _outputHelper.DisplayText("Duty Cycle 25%");
-                        //}
-                        // set the heating flag to on
                         PinManagement.isHeating = true;
                         // display heat is on
                         _outputHelper.DisplayText("Heat On");
@@ -144,7 +97,6 @@ namespace CodingSmackdown.Services
                     {
                         // the heater is not engaged or the current temperature is greater or equal to the set temperature
                         // turn off the heater is turned off by setting the heater port loq
-                        //PinManagement.heaterOnOffPort.SetDutyCycle(0);
                         PinManagement.heaterOnOffPort.Write(false);
                         // set the heating flag to off
                         PinManagement.isHeating = false;
@@ -164,8 +116,6 @@ namespace CodingSmackdown.Services
                     _outputHelper.UpdateTemperatureLogFile();
                     // update the LCD display
                     _outputHelper.UpdateTemeratureDisplay();
-                    // display differences
-                    _outputHelper.DisplaySensorTemperatures();
                 }
                 catch (Exception ex)
                 {

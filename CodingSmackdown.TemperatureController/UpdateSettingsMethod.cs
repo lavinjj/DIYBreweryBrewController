@@ -89,6 +89,42 @@ namespace CodingSmackdown.TemperatureController
                 {
                     settings.SecondaryDNSAddress = e.Request.GetArguments["secondaryDNSAddress"].ToString();
                 }
+                if (e.Request.GetArguments.Contains("voltageReference"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["voltageReference"].ToString(), out tempValue);
+                    settings.VoltageReference = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("padResistance"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["padResistance"].ToString(), out tempValue);
+                    settings.PadResistance = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("resistanceRT"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["resistanceRT"].ToString(), out tempValue);
+                    settings.ResistanceRT = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("coefficientA"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["coefficientA"].ToString(), out tempValue);
+                    settings.CoefficientA = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("coefficientB"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["coefficientB"].ToString(), out tempValue);
+                    settings.CoefficientB = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("coefficientC"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["coefficientC"].ToString(), out tempValue);
+                    settings.CoefficientC = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("coefficientD"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["coefficientD"].ToString(), out tempValue);
+                    settings.CoefficientD = tempValue;
+                }
+
                 // save the new device settings
                 settings.saveSettings();
                 // send back an ok response

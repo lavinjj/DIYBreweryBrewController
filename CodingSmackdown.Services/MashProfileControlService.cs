@@ -48,9 +48,13 @@ namespace CodingSmackdown.Services
                                 if (_reachedStepTemperature)
                                 {
                                     // check how long at the step temperature
-                                    TimeSpan timeInterval = _stepStartTime.Subtract(_currentTime);
+                                    TimeSpan timeInterval = _currentTime.Subtract(_stepStartTime);
                                     if (timeInterval.Minutes >= _currentStep.Time)
                                     {
+                                        // pulse pezio for five seconds to indicate profile step complete
+                                        PinManagement.buzzerPort.Write(true);
+                                        Thread.Sleep(5000);
+                                        PinManagement.buzzerPort.Write(false);
                                         // get the next step
                                         _currentStep = PinManagement.mashSteps.Next();
                                         // set the start time

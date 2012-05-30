@@ -46,9 +46,8 @@ namespace CodingSmackdown.TemperatureController
             // Print a message to the LCD.
             _displayHelper.DisplayText("DIY Brewery|Temp Controller");
 
-            Thread.Sleep(1000);
-
-
+            Thread.Sleep(5000);
+            
             _displayHelper.DisplayText("Loading|Settings");
 
             Settings settings = new Settings();
@@ -68,8 +67,11 @@ namespace CodingSmackdown.TemperatureController
             WebServer.AddResponse(new JSONResponse("temperature", new JSONResponseCheck(GetTemperatureMethod.GetTemperature)));
             WebServer.AddResponse(new JSONResponse("settings", new JSONResponseCheck(GetSettingsMethod.GetSettings)));
             WebServer.AddResponse(new JSONResponse("updateSettings", new JSONResponseCheck(UpdateSettingsMethod.UpdateSettings)));
+            WebServer.AddResponse(new JSONResponse("updateMashProfile", new JSONResponseCheck(UpdateMashProfileMethod.UpdateMashProfile)));
 
             _displayHelper.DisplayText("Web Server|Started");
+
+            Thread.Sleep(5000);
 
             NTPTimeService timeService = new NTPTimeService();
             timeService.SystemSettings = settings;
@@ -79,10 +81,11 @@ namespace CodingSmackdown.TemperatureController
 
             Thread.Sleep(5000);
 
-            NameService nameService = new NameService();
-            nameService.AddName(settings.NetBiosName, NameService.NameType.Unique, NameService.MsSuffix.Default);
+            MashProfileControlService mashProfileService = new MashProfileControlService(_displayHelper);
+            mashProfileService.SystemSettings = settings;
+            mashProfileService.Start();
 
-            _displayHelper.DisplayText("NETBIOS Service|Started");
+            _displayHelper.DisplayText("Mash Profile|Service Started");
 
             Thread.Sleep(5000);
 
@@ -91,6 +94,8 @@ namespace CodingSmackdown.TemperatureController
             tempLogger.Start();
 
             _displayHelper.DisplayText("Temp Monitor|Started");
+
+            Thread.Sleep(5000);
 
             PinManagement.engageHeaterButton.OnInterrupt += new NativeEventHandler(EngageHeaterButton_OnInterrupt);
             PinManagement.setTemperatureUpButton.OnInterrupt += new NativeEventHandler(TemperatureSetUp_OnInterrupt);

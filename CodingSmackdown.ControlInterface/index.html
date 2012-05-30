@@ -41,6 +41,7 @@
     <div id="tabs">
         <ul>
             <li><a href="#current">Current Readings</a></li>
+            <li><a href="#profile">Mash Profile</a></li>
             <li><a href="#settings">Settings</a></li>
             <li><a href="#probe">Probe</a></li>
         </ul>
@@ -64,12 +65,40 @@
                     <span class="settinglabel">Degrees Fahrenheit</span> <span class="settingfield" id="tempFahrenheit"
                         data-bind="text: sensorData().temperatureFahrenheit"></span>
                 </div>
+                <div class="setting">
+                    <span class="settinglabel">Heating</span> <span class="settingfield" id="Span4" data-bind="text: sensorData().isHeating">
+                    </span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">Current Mash Step</span> <span class="settingfield" id="Span1"
+                        data-bind="text: sensorData().currentMashStep"></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">Current Mash Temp Setting</span> <span class="settingfield"
+                        id="Span2" data-bind="text: sensorData().currentMashTemp"></span>
+                </div>
+                <div class="setting">
+                    <span class="settinglabel">Current Mash Time</span> <span class="settingfield" id="Span3"
+                        data-bind="text: sensorData().currentMashTime"></span>
+                </div>
                 <div class="clear">
                     &nbsp;</div>
                 <div id="refreshCurrentReading" data-bind="click: function() {  cs.viewModel.updateCurrentTemp(); }">
                     Update Reading</div>
                 <div class="clear">
                     &nbsp;</div>
+                <h2>
+                    Temperature History</h2>
+                <div id="chartdiv" style="height: 400px; width: 500px;">
+                </div>
+                <div class="clear">
+                    &nbsp;</div>
+                <div id="refreshHistory" onclick="updateHistory();">
+                    Update Chart</div>
+            </fieldset>
+        </div>
+        <div id="profile">
+            <fieldset>
                 <h2>
                     Mash Profile</h2>
                 <div class="setting">
@@ -92,16 +121,10 @@
                     &nbsp;</div>
                 <div id="addMashStep" data-bind="click: function() {  cs.viewModel.addItem(); }">
                     Add Step</div>
+                <div id="updateMashProfile" data-bind="click: function() {  cs.viewModel.updateMashProfile(); }">
+                    Update Profile</div>
                 <div class="clear">
                     &nbsp;</div>
-                <h2>
-                    Temperature History</h2>
-                <div id="chartdiv" style="height: 400px; width: 500px;">
-                </div>
-                <div class="clear">
-                    &nbsp;</div>
-                <div id="refreshHistory" onclick="updateHistory();">
-                    Update Chart</div>
             </fieldset>
         </div>
         <div id="settings">

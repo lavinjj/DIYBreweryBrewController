@@ -431,14 +431,23 @@ namespace CodingSmackdown.Services
             bool success = true;
             int decimalDiv = 0;
             result = 0;
+            bool negative = false;
             try
             {
                 for (int i = 0; i < s.Length; i++)
                 {
                     if (s[i] == '.' && decimalDiv == 0)
+                    {
                         decimalDiv = 1;
+                    }
+                    else if (s[i] == '-')
+                    {
+                        negative = true;
+                    }
                     else if (s[i] < '0' || s[i] > '9')
+                    {
                         success = false;
+                    }
                     else
                     {
                         result = result * 10;
@@ -449,6 +458,10 @@ namespace CodingSmackdown.Services
                 if (decimalDiv > 0)
                 {
                     result = (float)result / decimalDiv;
+                }
+                if (negative)
+                {
+                    result = result * -1.0F;
                 }
             }
             catch
