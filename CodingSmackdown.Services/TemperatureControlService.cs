@@ -76,7 +76,7 @@ namespace CodingSmackdown.Services
                     float averageReadingSensor2 = totalReadingSensor2 / 100;
                     float milliVoltsSensor2 = averageReadingSensor2 * 3300 / 1023;
                     float tempCelsiusSensor2 = (milliVoltsSensor2 - 500) / 10;
-                    float tempFahrenheitSensor2 = (float)(tempCelsiusSensor2 * 1.8) + 32;
+                    float tempFahrenheitSensor2 = (float)(tempCelsiusSensor2 * 1.8) + 32 + SystemSettings.TemperatureOffset;
                     PinManagement.milliVoltsSensor2 = milliVoltsSensor2;
                     PinManagement.temperatureCelciusSensor2 = tempCelsiusSensor2;
                     PinManagement.currentTemperatureSensor2 = tempFahrenheitSensor2;
@@ -98,7 +98,7 @@ namespace CodingSmackdown.Services
                     //Temp = 1 / (0.003354016 + (0.0002909670 * Temp) + (0.000001632136 * Temp * Temp) + (0.00000007192200 * Temp * Temp * Temp));
                     ////Temp = 1 / (0.003354016 + (0.0002744032 * Temp) + (0.0000001375492 * Temp * Temp * Temp));
                     double tempCelsius = rtot(thermResistance);
-                    double tempFahrenheit = (tempCelsius * 1.8) + 32;
+                    double tempFahrenheit = (tempCelsius * 1.8) + 32 + SystemSettings.TemperatureOffset;
                     // update the static values
                     PinManagement.milliVoltsSensor1 = (float)milliVolts;
                     PinManagement.currentTemperatureSensor1 = (float)tempFahrenheit;

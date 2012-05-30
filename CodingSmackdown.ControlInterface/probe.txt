@@ -1,0 +1,7 @@
+VoltageReference=3.3
+PadResistance=1470000
+ResistanceRT=1500000
+CoefficientA=0.003354016
+CoefficientB=0.0002909670
+CoefficientC=0.000001632136
+CoefficientD=0.00000007192200

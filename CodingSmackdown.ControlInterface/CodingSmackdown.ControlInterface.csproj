@@ -128,6 +128,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="index.html" />
+    <Content Include="probe.txt" />
     <Content Include="Scripts\codingsmackdown.controlinterface.js" />
     <Content Include="Scripts\excanvas.js" />
     <Content Include="Scripts\excanvas.min.js" />
@@ -179,6 +180,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\knockout.debug.js" />
     <Content Include="Scripts\knockout.js" />
+    <Content Include="Scripts\knockout.simpleGrid.1.3.js" />
     <Content Include="settings.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

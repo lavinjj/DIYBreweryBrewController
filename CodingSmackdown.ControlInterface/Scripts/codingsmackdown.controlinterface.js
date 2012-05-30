@@ -76,6 +76,28 @@ cs.viewModel = function () {
     // private data
     sensorData = ko.observable(new cs.sensorData()),
     settings = ko.observable(new cs.settingsData()),
+    mashProfile = ko.observableArray([]),
+    mashTemperature = ko.observable(''),
+    mashStepLength = ko.observable(''),
+
+    gridViewModel = new ko.simpleGrid.viewModel({
+        data: mashProfile,
+        columns: [
+        { headerText: "Step Number", rowText: "step" },
+        { headerText: "Temperature", rowText: "temperature" },
+        { headerText: "Length", rowText: "minutes" }
+        ],
+        pageSize: 10
+    }),
+
+    addItem = function () {
+        var step = mashProfile().length;
+        mashProfile().push({ step: step, temperature: mashTemperature(), minutes: mashStepLength() });
+    },
+
+    jumpToFirstPage = function () {
+        this.gridViewModel.currentPageIndex(0);
+    },
 
     // methods
     updateCurrentTemp = function () {
@@ -114,10 +136,10 @@ cs.viewModel = function () {
         $.getJSON("updateSettings", { minutesBetweenReadings: settings().minutesBetweenReadings(), temperatureOffset: settings().temperatureOffset(),
             historyFilename: settings().historyFilename(), ntpServerName: settings().ntpServerName(), minutesBetweenNTPUpdate: settings().minutesBetweenNTPUpdate(),
             timeZoneOffset: settings().timeZoneOffset(), netbiosName: settings().netbiosName(), enableDHCP: settings().enableDHCP(),
-            staticIPAddress: settings().staticIPAddress(), subnetMask: settings().subnetMask(), defaultGateway: settings().defaultGateway(), 
+            staticIPAddress: settings().staticIPAddress(), subnetMask: settings().subnetMask(), defaultGateway: settings().defaultGateway(),
             primaryDNSAddress: settings().primaryDNSAddress(), secondaryDNSAddress: settings().secondaryDNSAddress(),
-            voltageReference : settings().voltageReference(), padResistance : settings().padResistance(), resistanceRT : settings().resistanceRT(),
-            coefficientA : settings().coefficientA(), coefficientB : settings.coefficientB(), coefficientC : settings.coefficientC(),
+            voltageReference: settings().voltageReference(), padResistance: settings().padResistance(), resistanceRT: settings().resistanceRT(),
+            coefficientA: settings().coefficientA(), coefficientB: settings.coefficientB(), coefficientC: settings.coefficientC(),
             coefficientD: settings().coefficientD()
         }, function (j) {
 
@@ -135,7 +157,13 @@ cs.viewModel = function () {
         settings: settings,
         updateCurrentTemp: updateCurrentTemp,
         getSettings: getSettings,
-        updateSettings: updateSettings
+        updateSettings: updateSettings,
+        mashProfile: mashProfile,
+        mashTemperature: mashTemperature,
+        mashStepLength: mashStepLength,
+        gridViewModel: gridViewModel,
+        addItem: addItem,
+        jumpToFirstPage: jumpToFirstPage
     };
 } ();
 
@@ -206,6 +234,8 @@ $(document).ready(function () {
     $('#refreshCurrentReading').button();
     $('#refreshHistory').button();
     $('#updateSettings').button();
+    $('#updateProbeSettings').button();
+    $('#addMashStep').button();
     cs.viewModel.getSettings();
     cs.viewModel.updateCurrentTemp();
     ko.applyBindings(cs.viewModel);
