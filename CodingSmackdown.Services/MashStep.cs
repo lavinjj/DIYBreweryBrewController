@@ -37,10 +37,8 @@ namespace CodingSmackdown.Services
 
         public MashStep CurrentStep
         {
-            get
-            {
-                return _currentStep;
-            }
+            get { return _currentStep; }
+            set { _currentStep = value; }
         }
 
         public MashStep First()

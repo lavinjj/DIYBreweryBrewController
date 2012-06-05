@@ -230,8 +230,10 @@ var ajaxDataRenderer = function (url, plot, options) {
         success: function (text) {
             // array to return the data in
             var response = [];
-            var data = [];
+            var tempcurve = [];
+            var heating = [];
             var temperature;
+            var heat;
             // split the csv file into fields that 
             // we can parse
             var fields = text.split(/\n/);
@@ -243,11 +245,14 @@ var ajaxDataRenderer = function (url, plot, options) {
             for (var j = 0; j < tempData.length; j += 1) {
 
                 var dataFields = tempData[j].split(',');
-                temperature = parseFloat(dataFields[3]);
-                data.push(temperature);
+                temperature = parseFloat(dataFields[4]);
+                heat = parseInt(dataFields[6]);
+                tempcurve.push(temperature);
+                heating.push(heat * 100);
             }
 
-            response.push(data);
+            response.push(tempcurve);
+            // response.push(heating);
             ret = response;
         }
     });

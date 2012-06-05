@@ -53,6 +53,8 @@ namespace CodingSmackdown.TemperatureController
                                 PinManagement.mashSteps.Steps.Add(newMashStep);
                             }
                         }
+
+                        PinManagement.mashSteps.CurrentStep = null;
                     }
                 }
 

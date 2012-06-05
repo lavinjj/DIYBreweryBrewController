@@ -33,6 +33,8 @@ namespace CodingSmackdown.Services
                     {
                         if((PinManagement.mashSteps != null) && (PinManagement.mashSteps.Steps.Count > 0))
                         {
+                            _currentStep = PinManagement.mashSteps.CurrentStep;
+
                             if ((_currentStep == null) && (!_stepsComplete))
                             {
                                 _currentStep = PinManagement.mashSteps.First();
