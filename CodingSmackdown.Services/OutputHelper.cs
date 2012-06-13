@@ -35,13 +35,9 @@ namespace CodingSmackdown.Services
 
                     file.Write(recordTime.ToString());
 
-                    file.Write("," + PinManagement.milliVoltsSensor1.ToString("f4"));
+                    file.Write("," + PinManagement.temperatureCelsiusSensor.ToString("f4"));
 
-                    file.Write("," + PinManagement.resistanceSensor1.ToString("f4"));
-
-                    file.Write("," + PinManagement.temperatureCelciusSensor1.ToString("f4"));
-
-                    file.Write("," + PinManagement.currentTemperatureSensor1.ToString("f4"));
+                    file.Write("," + PinManagement.currentTemperatureSensor.ToString("f4"));
 
                     file.Write("," + PinManagement.setTemperature.ToString("f4"));
 
@@ -78,7 +74,7 @@ namespace CodingSmackdown.Services
 
                 displayString = new StringBuilder();
                 displayString.Append("Cnt Temp: ");
-                displayString.Append(PinManagement.currentTemperatureSensor1.ToString("f2"));
+                displayString.Append(PinManagement.currentTemperatureSensor.ToString("f2"));
                 _displayController.SetCursorPosition(0, 1);
                 _displayController.Write(displayString.ToString());
             }

@@ -7,111 +7,87 @@ using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using SecretLabs.NETMF.Hardware;
 using SecretLabs.NETMF.Hardware.NetduinoPlus;
+using CodingSmackdown.Sensors;
+using CodingSmackdown.PID;
 
 namespace CodingSmackdown.Services
 {
     public class TemperatureControlService : ServiceBase
     {
         private readonly OutputHelper _outputHelper = null;
-        private const double TABS = -273.15;
-        /** Coefficients of Steinhart-Hart polynom. */
-        private double[] a = {
-	        2.900538876296411e-005,
-	        4.503191323434938e-004,
-	        -3.288268667833969e-005,
-	        1.243331808293418e-006,
-        };
+
+        private Thermistor _thermistor = null;
+        private PIDController _pid = null;
+        private double _output = 0;
+        private int _windowSize = 5000;
+        private long _windowStartTime;
 
         public TemperatureControlService(OutputHelper helper)
         {
             _outputHelper = helper;
+
+            _thermistor = new Thermistor(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
+            _thermistor.VoltageReference = 3.3f;
+            _thermistor.ResistanceReference = 1470000;
+
+            _pid = new PIDController(PinManagement.currentTemperatureSensor, _output, PinManagement.setTemperature, 2, 5, 1, PIDController.PID_Direction.DIRECT);
+
+            _windowSize = (int)SystemSettings.MinutesBetweenReadings;
+
+            _pid.SetOutputLimits(0, _windowSize);
+
+            _pid.Mode = PIDController.PID_Mode.AUTOMATIC;
+
+            _windowStartTime = DateTime.Now.Ticks;
         }
-
-        private double poly(double x, int degree, double[] p) {
-          double retval = 0.0;
-          int i;
-
-          for (i = degree; i >= 0; i--)
-          {
-              retval = retval * x + p[i];
-          }
-
-            return retval;
-        }
-
-        private double rtot(double r)
-        {
-            double ti;
-
-            ti = poly(ElzeKool.exMath.Log(r), 3, a);
-            ti = 1.0 / ti + TABS;
-            return ti;
-        }
-
+        
         protected override void Run()
         {            
             while (true)
             {
                 try
                 {
-                    float totalReadingSensor1 = 0;
-                    // read the sensor 100 times and add up the value
-                    // so we can get an average reading
-                    for (int i = 0; i < 100; i++)
-                    {
-                        totalReadingSensor1 += PinManagement.temperatureSensorPort.Read();
-                        Thread.Sleep(10);
-                    }
-                    // calculate the temperature
-                    double averageReading = totalReadingSensor1 / 100;
-                    // double milliVolts = averageReading * SystemSettings.VoltageReference / 1023;
-                    double milliVolts = averageReading * 3.3 / 1023;
-                    // double vPad = SystemSettings.VoltageReference - milliVolts;
-                    double vPad = 3.3 - milliVolts;
-                    // double circuitCurrent = vPad / SystemSettings.PadResistance;
-                    double circuitCurrent = vPad / 1470000;
-                    double thermResistance = milliVolts / circuitCurrent;
-                    PinManagement.resistanceSensor1 = thermResistance;
-                    // calc the temperature based on the resistance
-                    double tempCelsius = rtot(thermResistance);
+                    double tempCelsius = _thermistor.GetTemperatureInC();
+
                     double tempFahrenheit = (tempCelsius * 1.8) + 32 + SystemSettings.TemperatureOffset;
+
                     // update the static values
-                    PinManagement.milliVoltsSensor1 = (float)milliVolts;
-                    PinManagement.currentTemperatureSensor1 = (float)tempFahrenheit;
-                    PinManagement.temperatureCelciusSensor1 = (float)tempCelsius;
-                    // calculate the difference between the set temperature and current temperature
-                    float temperatureDifference = (float)System.Math.Abs(PinManagement.setTemperature - PinManagement.currentTemperatureSensor1);
-                    // if the heater is engaged and the current temeprature is less than the set temperature and 
-                    // the difference is greater than our threshold value
-                    // make sure the heater is turned on by setting the heater port high
-                    if ((PinManagement.heaterEngaged) && (PinManagement.currentTemperatureSensor1 < PinManagement.setTemperature) && (temperatureDifference > SystemSettings.TemperatureHeaterOffset))
+                    PinManagement.currentTemperatureSensor = (float)tempFahrenheit;
+                    PinManagement.temperatureCelsiusSensor = (float)tempCelsius;
+
+                    _pid.Input = PinManagement.currentTemperatureSensor;
+                    _pid.SetPoint = PinManagement.setTemperature;
+
+                    _pid.Compute();
+
+                    _output = _pid.Output;
+
+                    if (PinManagement.heaterEngaged)
                     {
-                        PinManagement.heaterOnOffPort.Write(true);
-                        PinManagement.isHeating = true;
-                        // display heat is on
-                        _outputHelper.DisplayText("Heat On");
-                        // reset the buzzer flag
-                        PinManagement.alarmSounded = false;
-                    }
-                    else
-                    {
-                        // the heater is not engaged or the current temperature is greater or equal to the set temperature
-                        // turn off the heater is turned off by setting the heater port loq
-                        PinManagement.heaterOnOffPort.Write(false);
-                        // set the heating flag to off
-                        PinManagement.isHeating = false;
-                        // display heat is on
-                        _outputHelper.DisplayText("Heat Off");
-                        // if we haven't sounded the alarm to indicate we have reached the set temperature
-                        // and we are within the turn off threshold then sound the alarm
-                        if (!PinManagement.alarmSounded)
+                        if ((DateTime.Now.Ticks - _windowStartTime) > _windowSize)
                         {
-                            PinManagement.buzzerPort.Write(true);
-                            Thread.Sleep(2000);
-                            PinManagement.buzzerPort.Write(false);
-                            PinManagement.alarmSounded = true;
+                            _windowStartTime += _windowSize;
+                        }
+
+                        if (_output < (DateTime.Now.Ticks - _windowStartTime))
+                        {
+                            PinManagement.heaterOnOffPort.Write(true);
+                            PinManagement.isHeating = true;
+                            // display heat is on
+                            _outputHelper.DisplayText("Heat On");
+                        }
+                        else
+                        {
+                            // the heater is not engaged or the current temperature is greater or equal to the set temperature
+                            // turn off the heater is turned off by setting the heater port loq
+                            PinManagement.heaterOnOffPort.Write(false);
+                            // set the heating flag to off
+                            PinManagement.isHeating = false;
+                            // display heat is on
+                            _outputHelper.DisplayText("Heat Off");
                         }
                     }
+
                     // update the log file
                     _outputHelper.UpdateTemperatureLogFile();
                     // update the LCD display
@@ -121,8 +97,9 @@ namespace CodingSmackdown.Services
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
-                // wait til next reading cycle
-                Thread.Sleep((int)SystemSettings.MinutesBetweenReadings);
+
+                // Give up the clock so that the other threads can do their work
+                Thread.Sleep(10);
             }
         }
     }

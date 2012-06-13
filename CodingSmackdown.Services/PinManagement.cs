@@ -8,13 +8,8 @@ namespace CodingSmackdown.Services
 {
     static public class PinManagement
     {
-        static public float milliVoltsSensor1 = 0.0F;
-        static public float temperatureCelciusSensor1 = 0.0F;
-        static public float currentTemperatureSensor1 = 0.0F;
-        static public double resistanceSensor1 = 0.0;
-        static public float milliVoltsSensor2 = 0.0F;
-        static public float temperatureCelciusSensor2 = 0.0F;
-        static public float currentTemperatureSensor2 = 0.0F;
+        static public float temperatureCelsiusSensor = 0.0F;
+        static public float currentTemperatureSensor = 0.0F;
         static public float setTemperature = 0.0F;
         static public bool heaterEngaged = false;
         static public bool isHeating = false;
@@ -44,8 +39,8 @@ namespace CodingSmackdown.Services
         //static public OutputPort Digital13 = new OutputPort(Pins.GPIO_PIN_D13, false);
         //static public OutputPort OnboardLED = new OutputPort(Pins.ONBOARD_LED, false);
 
-        static public SecretLabs.NETMF.Hardware.AnalogInput temperatureSensorPort = new SecretLabs.NETMF.Hardware.AnalogInput(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
-        static public SecretLabs.NETMF.Hardware.AnalogInput temperatureSensorPort2 = new SecretLabs.NETMF.Hardware.AnalogInput(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A1);
+        //static public SecretLabs.NETMF.Hardware.AnalogInput temperatureSensorPort = new SecretLabs.NETMF.Hardware.AnalogInput(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
+        //static public SecretLabs.NETMF.Hardware.AnalogInput temperatureSensorPort2 = new SecretLabs.NETMF.Hardware.AnalogInput(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A1);
 
         static public MashSteps mashSteps = new MashSteps();
     }

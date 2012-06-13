@@ -43,7 +43,7 @@ namespace CodingSmackdown.Services
 
                             DateTime _currentTime = DateTime.Now;
                             // calculate the difference between the set temperature and current temperature
-                            float temperatureDifference = (float)System.Math.Abs(PinManagement.setTemperature - PinManagement.currentTemperatureSensor1);
+                            float temperatureDifference = (float)System.Math.Abs(PinManagement.setTemperature - PinManagement.currentTemperatureSensor);
                             // are we at the step temperature
                             if (temperatureDifference < SystemSettings.TemperatureHeaterOffset)
                             {

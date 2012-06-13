@@ -20,9 +20,8 @@ namespace CodingSmackdown.TemperatureController
 
                 JsonObject reading = new JsonObject();
                 reading.Add("timeOfReading", timeOfReading.ToString());
-                reading.Add("sensorMilliVolts", PinManagement.milliVoltsSensor1.ToString("f4"));
-                reading.Add("temperatureCelsius", PinManagement.temperatureCelciusSensor1.ToString("f2"));
-                reading.Add("temperatureFahrenheit", PinManagement.currentTemperatureSensor1.ToString("f2"));
+                reading.Add("temperatureCelsius", PinManagement.temperatureCelsiusSensor.ToString("f2"));
+                reading.Add("temperatureFahrenheit", PinManagement.currentTemperatureSensor.ToString("f2"));
                 reading.Add("isHeating", PinManagement.isHeating.ToString());
 
                 if((PinManagement.mashSteps != null) && (PinManagement.mashSteps.CurrentStep != null))
