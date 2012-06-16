@@ -1,25 +1,31 @@
-using System;
 using System.Collections;
-using Microsoft.SPOT;
 
 namespace CodingSmackdown.Services
 {
     public partial class MashStep
     {
         public int StepNumber { get; set; }
+
         public float Temperature { get; set; }
+
         public int Time { get; set; }
     }
 
     public partial class MashSteps
     {
-        private ArrayList _steps;
         private MashStep _currentStep;
         private int _index;
+        private ArrayList _steps;
 
         public MashSteps()
         {
             _steps = new ArrayList();
+        }
+
+        public MashStep CurrentStep
+        {
+            get { return _currentStep; }
+            set { _currentStep = value; }
         }
 
         public ArrayList Steps
@@ -33,12 +39,6 @@ namespace CodingSmackdown.Services
             {
                 _steps = value;
             }
-        }
-
-        public MashStep CurrentStep
-        {
-            get { return _currentStep; }
-            set { _currentStep = value; }
         }
 
         public MashStep First()

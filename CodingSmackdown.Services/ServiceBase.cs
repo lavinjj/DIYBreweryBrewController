@@ -1,12 +1,5 @@
 using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 
 namespace CodingSmackdown.Services
 {
@@ -17,14 +10,8 @@ namespace CodingSmackdown.Services
 
         public Settings SystemSettings
         {
-          get { return systemSettings; }
-          set { systemSettings = value; }
-        }
-
-        public void Start()
-        {
-            serviceThread = new Thread(Run);
-            serviceThread.Start();
+            get { return systemSettings; }
+            set { systemSettings = value; }
         }
 
         /// <summary>
@@ -33,7 +20,7 @@ namespace CodingSmackdown.Services
         public void Dispose()
         {
             // Close Thread
-            try 
+            try
             {
                 serviceThread.Abort();
                 DateTime timeoutAt = DateTime.Now.AddSeconds(10);
@@ -42,6 +29,12 @@ namespace CodingSmackdown.Services
             }
             catch { }
             serviceThread = null;
+        }
+
+        public void Start()
+        {
+            serviceThread = new Thread(Run);
+            serviceThread.Start();
         }
 
         /// <summary>
@@ -55,7 +48,5 @@ namespace CodingSmackdown.Services
                 Thread.Sleep((int)SystemSettings.MinutesBetweenReadings);
             }
         }
-
-
     }
 }

@@ -1,12 +1,7 @@
 using System;
-using Microsoft.SPOT;
-using NeonMika.Webserver.EventArgs;
-using System.Collections;
-using System.Threading;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 using CodingSmackdown.Services;
 using FastloadMedia.NETMF.Http;
+using NeonMika.Webserver.EventArgs;
 
 namespace CodingSmackdown.TemperatureController
 {
@@ -24,7 +19,7 @@ namespace CodingSmackdown.TemperatureController
                 reading.Add("temperatureFahrenheit", PinManagement.currentTemperatureSensor.ToString("f2"));
                 reading.Add("isHeating", PinManagement.isHeating.ToString());
 
-                if((PinManagement.mashSteps != null) && (PinManagement.mashSteps.CurrentStep != null))
+                if ((PinManagement.mashSteps != null) && (PinManagement.mashSteps.CurrentStep != null))
                 {
                     reading.Add("currentMashStep", PinManagement.mashSteps.CurrentStep.StepNumber.ToString());
                     reading.Add("currentMashTemp", PinManagement.mashSteps.CurrentStep.Temperature.ToString("f2"));

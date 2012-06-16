@@ -1,18 +1,14 @@
-﻿using System;
-using System.Text;
-
-namespace NeonMika.Webserver
+﻿namespace NeonMika.Webserver
 {
     /// <summary>
     /// Static settings for the webserver
     /// </summary>
-    static class Settings
+    internal static class Settings
     {
         /// <summary>
-        /// "" for complete access, otherwise @"[drive]:\[folder]\[folder]\[...]\"
-        /// Watch the '\' at the end of the path
+        /// Buffersize for response file sending
         /// </summary>
-        public const string ROOT_PATH = @"\SD\";
+        public const int FILE_BUFFERSIZE = 1024;
 
         /// <summary>
         /// Maximum byte size for a HTTP request sent to the server
@@ -20,8 +16,9 @@ namespace NeonMika.Webserver
         public const int MAX_REQUESTSIZE = 1024;
 
         /// <summary>
-        /// Buffersize for response file sending 
+        /// "" for complete access, otherwise @"[drive]:\[folder]\[folder]\[...]\"
+        /// Watch the '\' at the end of the path
         /// </summary>
-        public const int FILE_BUFFERSIZE = 1024;
+        public const string ROOT_PATH = @"\SD\";
     }
 }

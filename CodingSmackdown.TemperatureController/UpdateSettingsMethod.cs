@@ -1,20 +1,79 @@
 using System;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using NeonMika.Webserver.EventArgs;
-using System.Collections;
 using System.Threading;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 using CodingSmackdown.Services;
 using FastloadMedia.NETMF.Http;
+using Microsoft.SPOT.Hardware;
 using Microsoft.SPOT.Net.NetworkInformation;
-
+using NeonMika.Webserver.EventArgs;
 
 namespace CodingSmackdown.TemperatureController
 {
     public class UpdateSettingsMethod
     {
+        public static string GetNetworkIP(Settings settings)
+        {
+            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+
+            if (settings.EnableDHCP)
+            {
+                interf.EnableDynamicDns();
+                interf.EnableDhcp();
+                //interf.ReleaseDhcpLease();
+                //interf.RenewDhcpLease();
+            }
+            else
+            {
+                interf.EnableStaticIP(settings.StaticIPAddress, settings.SubnetMask, settings.DefaultGateway);
+                interf.EnableStaticDns(new string[] { settings.PrimaryDNSAddress, settings.SecondaryDNSAddress });
+            }
+
+            interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+            int count = 0;
+
+            while ((interf.IPAddress.Equals("0.0.0.0")) && (count < 100))
+            {
+                Thread.Sleep(1000);
+
+                interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+                count++;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
+
+            return interf.IPAddress;
+        }
+
+        public static void UpdateNetworkConfiguration(Settings settings)
+        {
+            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+
+            if (settings.EnableDHCP)
+            {
+                interf.EnableDynamicDns();
+                interf.EnableDhcp();
+                //interf.ReleaseDhcpLease();
+                //interf.RenewDhcpLease();
+            }
+            else
+            {
+                interf.EnableStaticIP(settings.StaticIPAddress, settings.SubnetMask, settings.DefaultGateway);
+                interf.EnableStaticDns(new string[] { settings.PrimaryDNSAddress, settings.SecondaryDNSAddress });
+            }
+
+            interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+            int count = 0;
+
+            while ((interf.IPAddress.Equals("0.0.0.0")) && (count < 100))
+            {
+                Thread.Sleep(1000);
+
+                interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+                count++;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
+        }
+
         public static bool UpdateSettings(RequestReceivedEventArgs e, JsonArray h)
         {
             try
@@ -60,7 +119,7 @@ namespace CodingSmackdown.TemperatureController
                 }
                 if (e.Request.GetArguments.Contains("enableDHCP"))
                 {
-                    if(e.Request.GetArguments["enableDHCP"].ToString().ToLower().Equals("on"))
+                    if (e.Request.GetArguments["enableDHCP"].ToString().ToLower().Equals("on"))
                     {
                         settings.EnableDHCP = true;
                     }
@@ -145,72 +204,6 @@ namespace CodingSmackdown.TemperatureController
             }
 
             return true;
-        }
-
-        public static void UpdateNetworkConfiguration(Settings settings)
-        {
-            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
-
-            if (settings.EnableDHCP)
-            {
-                interf.EnableDynamicDns();
-                interf.EnableDhcp();
-                //interf.ReleaseDhcpLease();
-                //interf.RenewDhcpLease();
-            }
-            else
-            {
-                interf.EnableStaticIP(settings.StaticIPAddress, settings.SubnetMask, settings.DefaultGateway);
-                interf.EnableStaticDns(new string[] { settings.PrimaryDNSAddress, settings.SecondaryDNSAddress });
-            }
-
-            interf = NetworkInterface.GetAllNetworkInterfaces()[0];
-            int count = 0;
-
-            while ((interf.IPAddress.Equals("0.0.0.0")) && (count < 100))
-            {
-                Thread.Sleep(1000);
-
-                interf = NetworkInterface.GetAllNetworkInterfaces()[0];
-                count++;
-            }
-
-            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
-
-        }
-
-        public static string GetNetworkIP(Settings settings)
-        {
-            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
-
-            if (settings.EnableDHCP)
-            {
-                interf.EnableDynamicDns();
-                interf.EnableDhcp();
-                //interf.ReleaseDhcpLease();
-                //interf.RenewDhcpLease();
-            }
-            else
-            {
-                interf.EnableStaticIP(settings.StaticIPAddress, settings.SubnetMask, settings.DefaultGateway);
-                interf.EnableStaticDns(new string[] { settings.PrimaryDNSAddress, settings.SecondaryDNSAddress });
-            }
-
-            interf = NetworkInterface.GetAllNetworkInterfaces()[0];
-            int count = 0;
-
-            while ((interf.IPAddress.Equals("0.0.0.0")) && (count < 100))
-            {
-                Thread.Sleep(1000);
-
-                interf = NetworkInterface.GetAllNetworkInterfaces()[0];
-                count++;
-            }
-
-            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
-
-            return interf.IPAddress;
-
         }
     }
 }

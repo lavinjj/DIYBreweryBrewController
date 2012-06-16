@@ -1,13 +1,13 @@
 ﻿// Micro Liquid Crystal Library
 // http://microliquidcrystal.codeplex.com
-// Appache License Version 2.0 
+// Appache License Version 2.0
 
 using System;
 
 namespace MicroLiquidCrystal
 {
     /// <summary>
-    /// Flags used to address individual general purpose pins of the port expander. 
+    /// Flags used to address individual general purpose pins of the port expander.
     /// </summary>
     [Flags]
     public enum ShifterPin : byte

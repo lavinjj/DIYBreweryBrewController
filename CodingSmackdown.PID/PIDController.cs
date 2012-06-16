@@ -1,127 +1,26 @@
 /**********************************************************************************************
  * Converted to .NET MicroFramework by Jim Lavin 06/12/2012
- * 
+ *
  * Based on Arduino PID Library - Version 1.0.1
  * by Brett Beauregard <br3ttb@gmail.com> brettbeauregard.com
  *
  * This Library is licensed under a GPLv3 License
  **********************************************************************************************/
+
 using System;
-using Microsoft.SPOT;
 
 namespace CodingSmackdown.PID
 {
     public class PIDController
     {
-        private double _outMin;
-        private double _outMax;
+        private PIDController.PID_Direction _direction;
+        private bool _inAutoMode;
         private double _iTerm;
         private double _lastInput;
-        private bool _inAutoMode;
         private long _lastTime;
-        private PIDController.PID_Direction _direction;
         private PIDController.PID_Mode _mode;
-
-
-        public enum PID_Mode
-        {
-            MANUAL = 0,
-            AUTOMATIC = 1
-        }
-
-        public enum PID_Direction
-        {
-            DIRECT = 0,
-            REVERSE = 1
-        }
-
-        /// <summary>
-        /// (P)roportional Tuning Parameter
-        /// </summary>
-        public double Kp { get; set; }
-
-        /// <summary>
-        /// (I)ntegral Tuning Parameter
-        /// </summary>
-        public double Ki { get; set; }
-
-        /// <summary>
-        /// (D)erivative Tuning Parameter
-        /// </summary>
-        public double Kd { get; set; }
-
-        /// <summary>
-        /// Allows the controller Mode to be set to manual (0) or Automatic (non-zero)
-        /// when the transition from manual to auto occurs, the controller is
-        /// automatically initialized
-        /// </summary>
-        public PIDController.PID_Mode Mode
-        {
-            get
-            {
-                return _mode;
-            }
-            set
-            {
-                bool newAuto = (value == PID_Mode.AUTOMATIC);
-
-                if (newAuto == !_inAutoMode)
-                {
-                    // we just went from manual to auto
-                    Initialize();
-                }
-
-                _inAutoMode = newAuto;
-
-                _mode = value;
-            }
-        }
-
-        /// <summary>
-        /// Sets the Direction, or "Action" of the controller. DIRECT
-        /// means the output will increase when error is positive. REVERSE
-        /// means the opposite.  it's very unlikely that this will be needed
-        /// once it is set in the constructor.        
-        /// </summary>
-        public PIDController.PID_Direction Direction
-        {
-            get
-            {
-                return _direction;
-            }
-            set
-            {
-                if (_inAutoMode && value != _direction)
-                {
-                    Kp = (0 - Kp);
-                    Ki = (0 - Ki);
-                    Kd = (0 - Kd);
-                }
-
-                _direction = value;
-            }
-        }
-
-        /// <summary>
-        /// Sets the frequency, in Milliseconds, with which 
-        /// the PID calculation is performed.  default is 1000
-        /// </summary>
-        public int SampleTime { get; set; }
-
-        /// <summary>
-        /// Input value from the current cycle
-        /// </summary>
-        public double Input { get; set; }
-
-        /// <summary>
-        /// Output value for the current cycle
-        /// </summary>
-        public double Output { get; set; }
-
-        /// <summary>
-        /// The value you are trying to reach
-        /// </summary>
-        public double SetPoint { get; set; }
+        private double _outMax;
+        private double _outMin;
 
         /// <summary>
         /// Default constructor
@@ -154,89 +53,105 @@ namespace CodingSmackdown.PID
             SetPoint = setpoint;
         }
 
-        /// <summary>
-        /// This function allows the controller's dynamic performance to be adjusted. 
-        /// it's called automatically from the constructor, but tunings can also
-        /// be adjusted on the fly during normal operation
-        /// </summary>
-        /// <param name="kp">(P)roportional Tuning Parameter</param>
-        /// <param name="ki">(I)ntegral Tuning Parameter</param>
-        /// <param name="kd">(D)erivative Tuning Parameter</param>
-        public void SetTunings(double kp, double ki, double kd)
+        public enum PID_Direction
         {
-            if (kp < 0 || ki < 0 || kd < 0) return;
+            DIRECT = 0,
+            REVERSE = 1
+        }
 
-            double SampleTimeInSec = ((double)SampleTime) / 1000;
-            Kp = kp;
-            Ki = ki * SampleTimeInSec;
-            Kd = kd / SampleTimeInSec;
+        public enum PID_Mode
+        {
+            MANUAL = 0,
+            AUTOMATIC = 1
+        }
 
-            if (Direction == PIDController.PID_Direction.REVERSE)
+        /// <summary>
+        /// Sets the Direction, or "Action" of the controller. DIRECT
+        /// means the output will increase when error is positive. REVERSE
+        /// means the opposite.  it's very unlikely that this will be needed
+        /// once it is set in the constructor.
+        /// </summary>
+        public PIDController.PID_Direction Direction
+        {
+            get
             {
-                kp = (0 - kp);
-                ki = (0 - ki);
-                kd = (0 - kd);
+                return _direction;
+            }
+            set
+            {
+                if (_inAutoMode && value != _direction)
+                {
+                    Kp = (0 - Kp);
+                    Ki = (0 - Ki);
+                    Kd = (0 - Kd);
+                }
+
+                _direction = value;
             }
         }
 
         /// <summary>
-        /// This function will be used far more often than SetInputLimits.  while
-        /// the input to the controller will generally be in the 0-1023 range (which is
-        /// the default already,)  the output will be a little different.  maybe they'll
-        /// be doing a time window and will need 0-8000 or something.  or maybe they'll
-        /// want to clamp it from 0-125.  who knows.  at any rate, that can all be done
-        /// here.
+        /// Input value from the current cycle
         /// </summary>
-        /// <param name="Min"></param>
-        /// <param name="Max"></param>
-        public void SetOutputLimits(double Min, double Max)
+        public double Input { get; set; }
+
+        /// <summary>
+        /// (D)erivative Tuning Parameter
+        /// </summary>
+        public double Kd { get; set; }
+
+        /// <summary>
+        /// (I)ntegral Tuning Parameter
+        /// </summary>
+        public double Ki { get; set; }
+
+        /// <summary>
+        /// (P)roportional Tuning Parameter
+        /// </summary>
+        public double Kp { get; set; }
+
+        /// <summary>
+        /// Allows the controller Mode to be set to manual (0) or Automatic (non-zero)
+        /// when the transition from manual to auto occurs, the controller is
+        /// automatically initialized
+        /// </summary>
+        public PIDController.PID_Mode Mode
         {
-            if (Min >= Max) return;
-
-            _outMin = Min;
-            _outMax = Max;
-
-            if (_inAutoMode)
+            get
             {
-                if (Output > _outMax)
+                return _mode;
+            }
+            set
+            {
+                bool newAuto = (value == PID_Mode.AUTOMATIC);
+
+                if (newAuto == !_inAutoMode)
                 {
-                    Output = _outMax;
-                }
-                else if (Output < _outMin)
-                {
-                    Output = _outMin;
+                    // we just went from manual to auto
+                    Initialize();
                 }
 
-                if (_iTerm > _outMax)
-                {
-                    _iTerm = _outMax;
-                }
-                else if (_iTerm < _outMin)
-                {
-                    _iTerm = _outMin;
-                }
+                _inAutoMode = newAuto;
+
+                _mode = value;
             }
         }
 
         /// <summary>
-        ///  does all the things that need to happen to ensure a bumpless transfer
-        /// from manual to automatic mode.
+        /// Output value for the current cycle
         /// </summary>
-        private void Initialize()
-        {
-            _iTerm = Output;
+        public double Output { get; set; }
 
-            _lastInput = Input;
+        /// <summary>
+        /// Sets the frequency, in Milliseconds, with which
+        /// the PID calculation is performed.  default is 1000
+        /// </summary>
+        public int SampleTime { get; set; }
 
-            if (_iTerm > _outMax)
-            {
-                _iTerm = _outMax;
-            }
-            else if (_iTerm < _outMin)
-            {
-                _iTerm = _outMin;
-            }
-        }
+        /// <summary>
+        /// The value you are trying to reach
+        /// </summary>
+        public double SetPoint { get; set; }
 
         /// <summary>
         /// This, as they say, is where the magic happens.  this function should be called
@@ -287,6 +202,90 @@ namespace CodingSmackdown.PID
                 /*Remember some variables for next time*/
                 _lastInput = input;
                 _lastTime = now;
+            }
+        }
+
+        /// <summary>
+        /// This function will be used far more often than SetInputLimits.  while
+        /// the input to the controller will generally be in the 0-1023 range (which is
+        /// the default already,)  the output will be a little different.  maybe they'll
+        /// be doing a time window and will need 0-8000 or something.  or maybe they'll
+        /// want to clamp it from 0-125.  who knows.  at any rate, that can all be done
+        /// here.
+        /// </summary>
+        /// <param name="Min"></param>
+        /// <param name="Max"></param>
+        public void SetOutputLimits(double Min, double Max)
+        {
+            if (Min >= Max) return;
+
+            _outMin = Min;
+            _outMax = Max;
+
+            if (_inAutoMode)
+            {
+                if (Output > _outMax)
+                {
+                    Output = _outMax;
+                }
+                else if (Output < _outMin)
+                {
+                    Output = _outMin;
+                }
+
+                if (_iTerm > _outMax)
+                {
+                    _iTerm = _outMax;
+                }
+                else if (_iTerm < _outMin)
+                {
+                    _iTerm = _outMin;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This function allows the controller's dynamic performance to be adjusted.
+        /// it's called automatically from the constructor, but tunings can also
+        /// be adjusted on the fly during normal operation
+        /// </summary>
+        /// <param name="kp">(P)roportional Tuning Parameter</param>
+        /// <param name="ki">(I)ntegral Tuning Parameter</param>
+        /// <param name="kd">(D)erivative Tuning Parameter</param>
+        public void SetTunings(double kp, double ki, double kd)
+        {
+            if (kp < 0 || ki < 0 || kd < 0) return;
+
+            double SampleTimeInSec = ((double)SampleTime) / 1000;
+            Kp = kp;
+            Ki = ki * SampleTimeInSec;
+            Kd = kd / SampleTimeInSec;
+
+            if (Direction == PIDController.PID_Direction.REVERSE)
+            {
+                kp = (0 - kp);
+                ki = (0 - ki);
+                kd = (0 - kd);
+            }
+        }
+
+        /// <summary>
+        /// does all the things that need to happen to ensure a bumpless transfer
+        /// from manual to automatic mode.
+        /// </summary>
+        private void Initialize()
+        {
+            _iTerm = Output;
+
+            _lastInput = Input;
+
+            if (_iTerm > _outMax)
+            {
+                _iTerm = _outMax;
+            }
+            else if (_iTerm < _outMin)
+            {
+                _iTerm = _outMin;
             }
         }
     }

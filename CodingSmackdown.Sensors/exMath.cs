@@ -5,44 +5,38 @@ namespace ElzeKool
     /// <summary>
     /// Math Library for Micro Framework
     /// Compatible with full .NET Framework System.Math
-    /// 
+    ///
     /// (C)opyright 2009 Elze Kool, http://www.microframework.nl
-    /// 
+    ///
     /// This Sourcecode is Public Domain. You are free to use this class Non-Commercialy and Commercialy.
-    /// 
+    ///
     /// This sourcecode is provided AS-IS. I take no responsibility for direct or indirect
-    /// damage coused by this program/class. 
-    /// 
+    /// damage coused by this program/class.
+    ///
     /// </summary>
     public static class exMath
     {
-
         #region Internaly used constants
 
-        const double sq2p1 = 2.414213562373095048802e0F;
-        const double sq2m1 = .414213562373095048802e0F;
-        const double pio2 = 1.570796326794896619231e0F;
-        const double pio4 = .785398163397448309615e0F;
-        const double log2e = 1.4426950408889634073599247F;
-        const double sqrt2 = 1.4142135623730950488016887F;
-        const double ln2 = 6.93147180559945286227e-01F;
-        const double atan_p4 = .161536412982230228262e2F;
-        const double atan_p3 = .26842548195503973794141e3F;
-        const double atan_p2 = .11530293515404850115428136e4F;
-        const double atan_p1 = .178040631643319697105464587e4F;
-        const double atan_p0 = .89678597403663861959987488e3F;
-        const double atan_q4 = .5895697050844462222791e2F;
-        const double atan_q3 = .536265374031215315104235e3F;
-        const double atan_q2 = .16667838148816337184521798e4F;
-        const double atan_q1 = .207933497444540981287275926e4F;
-        const double atan_q0 = .89678597403663861962481162e3F;
+        private const double atan_p0 = .89678597403663861959987488e3F;
+        private const double atan_p1 = .178040631643319697105464587e4F;
+        private const double atan_p2 = .11530293515404850115428136e4F;
+        private const double atan_p3 = .26842548195503973794141e3F;
+        private const double atan_p4 = .161536412982230228262e2F;
+        private const double atan_q0 = .89678597403663861962481162e3F;
+        private const double atan_q1 = .207933497444540981287275926e4F;
+        private const double atan_q2 = .16667838148816337184521798e4F;
+        private const double atan_q3 = .536265374031215315104235e3F;
+        private const double atan_q4 = .5895697050844462222791e2F;
+        private const double ln2 = 6.93147180559945286227e-01F;
+        private const double log2e = 1.4426950408889634073599247F;
+        private const double pio2 = 1.570796326794896619231e0F;
+        private const double pio4 = .785398163397448309615e0F;
+        private const double sq2m1 = .414213562373095048802e0F;
+        private const double sq2p1 = 2.414213562373095048802e0F;
+        private const double sqrt2 = 1.4142135623730950488016887F;
 
-        #endregion
-
-        /// <summary>
-        /// PI
-        /// </summary>
-        public static readonly double PI = 3.14159265358979323846F;
+        #endregion Internaly used constants
 
         /// <summary>
         /// Natural base E
@@ -50,7 +44,12 @@ namespace ElzeKool
         public static readonly double E = 2.71828182845904523536F;
 
         /// <summary>
-        /// Returns the absolute value 
+        /// PI
+        /// </summary>
+        public static readonly double PI = 3.14159265358979323846F;
+
+        /// <summary>
+        /// Returns the absolute value
         /// </summary>
         /// <param name="x">A number</param>
         /// <returns>absolute value of x</returns>
@@ -132,7 +131,6 @@ namespace ElzeKool
         /// <returns>the arctangent of x/y</returns>
         public static double Atan2(double y, double x)
         {
-
             if ((x + y) == x)
             {
                 if ((x == 0F) & (y == 0F)) return 0F;
@@ -148,7 +146,6 @@ namespace ElzeKool
                     return ((pio2 * 2) - atans((-x) / y));
                 else
                     return (((-pio2) * 2) + atans(x / y));
-
             }
             else if (x > 0.0F)
             {
@@ -169,7 +166,6 @@ namespace ElzeKool
         {
             return System.Math.Ceiling(x);
         }
-
 
         /// <summary>
         /// Calculate Cosinus
@@ -235,7 +231,6 @@ namespace ElzeKool
             }
         }
 
-
         /// <summary>
         /// Returns the hyperbolic cosine of the specified angle
         /// </summary>
@@ -243,7 +238,6 @@ namespace ElzeKool
         /// <returns>hyperbolic cosine of x</returns>
         public static double Cosh(double x)
         {
-
             if (x < 0.0F) x = -x;
 
             if (x == 0F)
@@ -262,7 +256,6 @@ namespace ElzeKool
             {
                 return (0.5F * (Exp(x) + Exp(-x)));
             }
-
         }
 
         /// <summary>
@@ -286,7 +279,7 @@ namespace ElzeKool
 
             // if (Abs(x) < (double.Epsilon * 2)) return m;
 
-            // Uses Taylor series 
+            // Uses Taylor series
             // http://www.mathreference.com/ca,tfn.html
             for (int y = 1; y <= 4; y++)
             {
@@ -296,40 +289,6 @@ namespace ElzeKool
             }
 
             return ex * m;
-
-        }
-
-        /// <summary>
-        /// Returns a specified number raised to the specified power
-        /// </summary>
-        /// <param name="x">number to be raised to a power</param>
-        /// <param name="y">number that specifies a power</param>
-        /// <returns>x raised to the power y</returns>
-        public static double Pow(double x, double y)
-        {
-            double temp = 0F;
-            long l;
-
-            if (x <= 0.0F)
-            {
-                if (x == 0.0F)
-                {
-                    if (y <= 0.0F)
-                        throw new ArgumentException();
-                }
-
-                l = (long)Floor(y);
-                if (l != y)
-
-                    temp = Exp(y * Log(-x));
-
-                if ((l % 2) == 1)
-                    temp = -temp;
-
-                return (temp);
-            }
-
-            return (Exp(y * Log(x)));
         }
 
         /// <summary>
@@ -401,7 +360,7 @@ namespace ElzeKool
         }
 
         /// <summary>
-        /// Returns the base 10 logarithm of a specified number. 
+        /// Returns the base 10 logarithm of a specified number.
         /// </summary>
         /// <param name="x">a Number </param>
         /// <returns>Logaritmic of x</returns>
@@ -439,27 +398,40 @@ namespace ElzeKool
         }
 
         /// <summary>
-        /// Returns the hyperbolic sine of the specified angle.
+        /// Returns a specified number raised to the specified power
         /// </summary>
-        /// <param name="x">An angle, measured in radians</param>
-        /// <returns>The hyperbolic sine of x</returns>
-        public static double Sinh(double x)
+        /// <param name="x">number to be raised to a power</param>
+        /// <param name="y">number that specifies a power</param>
+        /// <returns>x raised to the power y</returns>
+        public static double Pow(double x, double y)
         {
-            if (x < 0F) x = -x;
+            double temp = 0F;
+            long l;
 
-            if (x <= 22F)
+            if (x <= 0.0F)
             {
-                double Ex_1 = Tanh(x / 2) * (Exp(x) + 1);
-                return ((Ex_1 + (Ex_1 / (Ex_1 - 1))) / 2);
+                if (x == 0.0F)
+                {
+                    if (y <= 0.0F)
+                        throw new ArgumentException();
+                }
+
+                l = (long)Floor(y);
+                if (l != y)
+
+                    temp = Exp(y * Log(-x));
+
+                if ((l % 2) == 1)
+                    temp = -temp;
+
+                return (temp);
             }
-            else
-            {
-                return (Exp(x) / 2);
-            }
+
+            return (Exp(y * Log(x)));
         }
 
         /// <summary>
-        /// Returns a value indicating the sign 
+        /// Returns a value indicating the sign
         /// </summary>
         /// <param name="x">A signed number.</param>
         /// <returns>A number indicating the sign of x</returns>
@@ -481,6 +453,26 @@ namespace ElzeKool
         public static double Sin(double x)
         {
             return Cos((System.Math.PI / 2.0F) - x);
+        }
+
+        /// <summary>
+        /// Returns the hyperbolic sine of the specified angle.
+        /// </summary>
+        /// <param name="x">An angle, measured in radians</param>
+        /// <returns>The hyperbolic sine of x</returns>
+        public static double Sinh(double x)
+        {
+            if (x < 0F) x = -x;
+
+            if (x <= 22F)
+            {
+                double Ex_1 = Tanh(x / 2) * (Exp(x) + 1);
+                return ((Ex_1 + (Ex_1 / (Ex_1 - 1))) / 2);
+            }
+            else
+            {
+                return (Exp(x) / 2);
+            }
         }
 
         /// <summary>
@@ -511,7 +503,6 @@ namespace ElzeKool
             }
 
             return x2;
-
         }
 
         /// <summary>
@@ -535,7 +526,7 @@ namespace ElzeKool
         }
 
         /// <summary>
-        /// Calculates the integral part of x to the nearest integer towards zero. 
+        /// Calculates the integral part of x to the nearest integer towards zero.
         /// </summary>
         /// <param name="x">A number to truncate</param>
         /// <returns>integral part of x</returns>
@@ -549,22 +540,7 @@ namespace ElzeKool
                 return Ceiling(x);
         }
 
-
-
         #region Internaly used functions
-
-        private static double expm1(double x)
-        {
-            double u = Exp(x);
-
-            if (u == 1.0F)
-                return x;
-
-            if (u - 1.0F == -1.0F)
-                return -1.0F;
-
-            return (u - 1.0F) * x / Log(u);
-        }
 
         private static double _power(double x, int c)
         {
@@ -605,10 +581,21 @@ namespace ElzeKool
             value = ((((atan_p4 * argsq + atan_p3) * argsq + atan_p2) * argsq + atan_p1) * argsq + atan_p0);
             value = value / (((((argsq + atan_q4) * argsq + atan_q3) * argsq + atan_q2) * argsq + atan_q1) * argsq + atan_q0);
             return (value * x);
-
         }
 
-        #endregion
+        private static double expm1(double x)
+        {
+            double u = Exp(x);
 
+            if (u == 1.0F)
+                return x;
+
+            if (u - 1.0F == -1.0F)
+                return -1.0F;
+
+            return (u - 1.0F) * x / Log(u);
+        }
+
+        #endregion Internaly used functions
     }
 }

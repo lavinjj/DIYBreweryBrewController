@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Text;
-using System.Diagnostics;
 using System.Net.Sockets;
-using System.IO;
-using System.Collections;
+using System.Text;
 using NeonMika.Webserver.EventArgs;
-using Microsoft.SPOT;
 
 namespace NeonMika.Webserver.Responses
 {
     abstract public class Response : IDisposable
     {
         private string _Name;
-
-        public string Name
-        {
-            get { return _Name; }
-            set { _Name = value; }
-        }
 
         /// <summary>
         /// Creates response to send back to client
@@ -28,51 +18,26 @@ namespace NeonMika.Webserver.Responses
             this._Name = Name;
         }
 
-        /// <summary>
-        /// Creates header for 200 OK response
-        /// </summary>
-        /// <param name="MimeType">MIME type of response</param>
-        /// <param name="ContentLength">Byte count of response body</param>
-        protected void Send200_OK(string MimeType, int ContentLength, Socket Client)
+        public string Name
         {
-            /*
-            StringBuilder headerBuilder = new StringBuilder();
-            headerBuilder.Append("HTTP/1.0 200 OK\r\n");
-            headerBuilder.Append("Content-Type: ");
-            headerBuilder.Append(MimeType);
-            headerBuilder.Append("; charset=utf-8\r\n");
-            headerBuilder.Append("Content-Length: ");
-            headerBuilder.Append(ContentLength.ToString());
-            headerBuilder.Append("\r\n");
-            headerBuilder.Append("Connection: close\r\n\r\n");
-             * */
-
-            String header = "HTTP/1.0 200 OK\r\n" + "Content-Type: " + MimeType + "; charset=utf-8\r\n" + "Content-Length: " + ContentLength.ToString() + "\r\n" + "Connection: close\r\n\r\n";
-
-            try
-            {
-                Client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
-                return;
-            }
+            get { return _Name; }
+            set { _Name = value; }
         }
 
         /// <summary>
-        /// Sends a 404 Not Found response
+        /// Override this, check the URL and process data if needed
         /// </summary>
-        protected void Send404_NotFound(Socket Client)
-        {
-            string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\nPage not found";
-            if (Client != null)
-                Client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
-            System.Diagnostics.Debug.WriteLine("Sent 404 Not Found");
-        }
+        /// <returns>True if SendResponse should be sent, false if not</returns>
+        abstract public bool ConditionsCheckAndDataFill(RequestReceivedEventArgs requestArguments);
 
         /// <summary>
-        /// 
+        /// Override this method to implement a response logic.
+        /// </summary>
+        /// <returns>True if Response was sent, false if not</returns>
+        abstract public bool SendResponse(RequestReceivedEventArgs requestArguments);
+
+        /// <summary>
+        ///
         /// </summary>
         /// <param name="Filename">File name or complete file path</param>
         /// <returns>MIME type</returns>
@@ -122,24 +87,54 @@ namespace NeonMika.Webserver.Responses
         }
 
         /// <summary>
-        /// Override this method to implement a response logic.
+        /// Creates header for 200 OK response
         /// </summary>
-        /// <returns>True if Response was sent, false if not</returns>
-        abstract public bool SendResponse(RequestReceivedEventArgs requestArguments);
+        /// <param name="MimeType">MIME type of response</param>
+        /// <param name="ContentLength">Byte count of response body</param>
+        protected void Send200_OK(string MimeType, int ContentLength, Socket Client)
+        {
+            /*
+            StringBuilder headerBuilder = new StringBuilder();
+            headerBuilder.Append("HTTP/1.0 200 OK\r\n");
+            headerBuilder.Append("Content-Type: ");
+            headerBuilder.Append(MimeType);
+            headerBuilder.Append("; charset=utf-8\r\n");
+            headerBuilder.Append("Content-Length: ");
+            headerBuilder.Append(ContentLength.ToString());
+            headerBuilder.Append("\r\n");
+            headerBuilder.Append("Connection: close\r\n\r\n");
+             * */
+
+            String header = "HTTP/1.0 200 OK\r\n" + "Content-Type: " + MimeType + "; charset=utf-8\r\n" + "Content-Length: " + ContentLength.ToString() + "\r\n" + "Connection: close\r\n\r\n";
+
+            try
+            {
+                Client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message.ToString());
+                return;
+            }
+        }
 
         /// <summary>
-        /// Override this, check the URL and process data if needed
+        /// Sends a 404 Not Found response
         /// </summary>
-        /// <returns>True if SendResponse should be sent, false if not</returns>
-        abstract public bool ConditionsCheckAndDataFill(RequestReceivedEventArgs requestArguments);
+        protected void Send404_NotFound(Socket Client)
+        {
+            string header = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\nPage not found";
+            if (Client != null)
+                Client.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
+            System.Diagnostics.Debug.WriteLine("Sent 404 Not Found");
+        }
 
         #region IDisposable Members
 
         public void Dispose()
         {
-            
         }
 
-        #endregion
+        #endregion IDisposable Members
     }
 }

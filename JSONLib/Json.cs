@@ -9,66 +9,13 @@ namespace FastloadMedia.NETMF.Http
     /// </summary>
     public static class Json
     {
+        public const string ContentType = "application/json";
+
         /// <summary>
         /// Lookup table for hex values.
         /// </summary>
         private const string HEX_CHARS = "0123456789ABCDEF";
-        public const string ContentType = "application/json";
 
-        /// <summary>
-        /// Converts a character to its javascript unicode equivalent.
-        /// </summary>
-        /// <param name="c">The character to convert.</param>
-        /// <returns>The javascript unicode equivalent.</returns>
-        private static string JsUnicode(char c)
-        {
-            string result = "\\u";
-            ushort value = (ushort)c;
-
-            for (int i = 0; i < 4; i++, value <<= 4)
-                result += HEX_CHARS[value >> 12];
-
-            return result;
-        }
-
-        /// <summary>
-        /// Encodes a javascript string.
-        /// </summary>
-        /// <param name="s">The string to encode.</param>
-        /// <returns>The encoded string.</returns>
-        private static string JsEncode(string s)
-        {
-            string result = "";
-
-            foreach (char c in s)
-            {
-                if (c < (char)127)
-                {
-                    switch (c)
-                    {
-                        case '\b': result += "\\b"; break;
-                        case '\t': result += "\\t"; break;
-                        case '\n': result += "\\n"; break;
-                        case '\f': result += "\\f"; break;
-                        case '\r': result += "\\r"; break;
-                        case '"': result += "\\\""; break;
-                        case '/': result += "\\/"; break;
-                        case '\\': result += "\\\\"; break;
-                        default:
-                            if (c < ' ')
-                                result += JsUnicode(c);
-                            else
-                                result += c;
-                            break;
-                    }
-                }
-                else
-                    result += JsUnicode(c);
-            }
-
-            return result;
-        }
-                
         /// <summary>
         /// Convert a value to JSON.
         /// </summary>
@@ -118,6 +65,60 @@ namespace FastloadMedia.NETMF.Http
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Encodes a javascript string.
+        /// </summary>
+        /// <param name="s">The string to encode.</param>
+        /// <returns>The encoded string.</returns>
+        private static string JsEncode(string s)
+        {
+            string result = "";
+
+            foreach (char c in s)
+            {
+                if (c < (char)127)
+                {
+                    switch (c)
+                    {
+                        case '\b': result += "\\b"; break;
+                        case '\t': result += "\\t"; break;
+                        case '\n': result += "\\n"; break;
+                        case '\f': result += "\\f"; break;
+                        case '\r': result += "\\r"; break;
+                        case '"': result += "\\\""; break;
+                        case '/': result += "\\/"; break;
+                        case '\\': result += "\\\\"; break;
+                        default:
+                            if (c < ' ')
+                                result += JsUnicode(c);
+                            else
+                                result += c;
+                            break;
+                    }
+                }
+                else
+                    result += JsUnicode(c);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts a character to its javascript unicode equivalent.
+        /// </summary>
+        /// <param name="c">The character to convert.</param>
+        /// <returns>The javascript unicode equivalent.</returns>
+        private static string JsUnicode(char c)
+        {
+            string result = "\\u";
+            ushort value = (ushort)c;
+
+            for (int i = 0; i < 4; i++, value <<= 4)
+                result += HEX_CHARS[value >> 12];
+
+            return result;
         }
     }
 }

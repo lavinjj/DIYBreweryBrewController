@@ -1,19 +1,16 @@
-using System;
 using System.Threading;
 using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 
 namespace CodingSmackdown.Sensors
 {
     public class TMP36 : ITemperatureSensor
     {
-        protected SecretLabs.NETMF.Hardware.AnalogInput sensor; 
+        protected SecretLabs.NETMF.Hardware.AnalogInput sensor;
 
-        /// <summary> 
-        /// Create a new base instance of the temperature sensor. 
-        /// </summary> 
-        /// <param name="pin">Pin the sensor's vout is connected to. 
+        /// <summary>
+        /// Create a new base instance of the temperature sensor.
+        /// </summary>
+        /// <param name="pin">Pin the sensor's vout is connected to.
         public TMP36(Cpu.Pin pin)
         {
             // http://www.analog.com/en/temperature-sensing-and-thermal-management/digital-temperature-sensors/tmp36/products/product.html
@@ -25,9 +22,21 @@ namespace CodingSmackdown.Sensors
             sensor.SetRange(0, 3300);
         }
 
+        public int MaximumTemperatureCapability { get; protected set; }
+
+        public int MinimumTemperatureCapability { get; protected set; }
+
+        public float RequiredVoltage { get; protected set; }
+
+        public void Dispose()
+        {
+            sensor.Dispose();
+            sensor = null;
+        }
+
         public float GetTemperatureInC()
         {
-            // gain = 10 mV/Deg C 
+            // gain = 10 mV/Deg C
             double totalReading = 0;
 
             for (int i = 0; i < 100; i++)
@@ -44,18 +53,6 @@ namespace CodingSmackdown.Sensors
         public float GetTemperatureInF()
         {
             return GetTemperatureInC() * 9 / 5 + 32;
-        }
-
-        public int MaximumTemperatureCapability { get; protected set; }
-
-        public int MinimumTemperatureCapability { get; protected set; }
-
-        public float RequiredVoltage { get; protected set; }
-
-        public void Dispose()
-        {
-            sensor.Dispose();
-            sensor = null;
         }
     }
 }

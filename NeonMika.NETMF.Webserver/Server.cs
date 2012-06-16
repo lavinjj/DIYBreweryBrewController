@@ -1,21 +1,24 @@
 ﻿using System;
-using System.Text;
 using System.Collections;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
-using System.Diagnostics;
-using NeonMika.Webserver.Responses;
-using NeonMika.Webserver.EventArgs;
-using Microsoft.SPOT.Net.NetworkInformation;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
-using CodingSmackdown.Services;
 using FastloadMedia.NETMF.Http;
+using Microsoft.SPOT.Net.NetworkInformation;
+using NeonMika.Webserver.EventArgs;
+using NeonMika.Webserver.Responses;
 
 namespace NeonMika.Webserver
 {
+    /// <summary>
+    /// JSON Expansion methods have to be in this form
+    /// </summary>
+    /// <param name="e">Access to GET or POST arguments,...</param>
+    /// <param name="results">This JsonArray gets converted into JSON on response</param>
+    /// <returns>True if URL refers to this method, otherwise false (false = SendRequest should not be executed) </returns>
+    public delegate bool JSONResponseCheck(RequestReceivedEventArgs e, JsonArray results);
+
     /// <summary>
     /// Use this for RequestReceived events
     /// </summary>
@@ -23,21 +26,33 @@ namespace NeonMika.Webserver
     /// <param name="e"></param>
     public delegate void RequestReceivedHandler(object sender, RequestReceivedEventArgs e);
 
-    /// <summary>
-    /// JSON Expansion methods have to be in this form
-    /// </summary>
-    /// <param name="e">Access to GET or POST arguments,...</param>
-    /// <param name="results">This JsonArray gets converted into JSON on response</param>
-    /// <returns>True if URL refers to this method, otherwise false (false = SendRequest should not be executed) </returns>        
-    public delegate bool JSONResponseCheck(RequestReceivedEventArgs e, JsonArray results);
-
     public class Server
     {
         private readonly int _PortNumber = 80;
-
         private Socket _ListeningSocket = null;
-
         private Hashtable _Responses = new Hashtable();
+
+        /// <summary>
+        /// Creates an instance running in a separate thread
+        /// </summary>
+        /// <param name="portNumber">The port to listen</param>
+        public Server(int portNumber = 80)
+        {
+            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+
+            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
+
+            this._PortNumber = portNumber;
+
+            ResponseListInitialize();
+
+            _ListeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _ListeningSocket.Bind(new IPEndPoint(IPAddress.Any, portNumber));
+            _ListeningSocket.Listen(10);
+
+            var webserverThread = new Thread(WaitingForRequest);
+            webserverThread.Start();
+        }
 
         public EndPoint LocalIP
         {
@@ -62,25 +77,89 @@ namespace NeonMika.Webserver
         }
 
         /// <summary>
-        /// Creates an instance running in a separate thread
+        /// Adds a XMLResponse
         /// </summary>
-        /// <param name="portNumber">The port to listen</param>
-        public Server(int portNumber = 80)
+        /// <param name="response">XMLResponse that has to be added</param>
+        public void AddResponse(Response response)
         {
-            var interf = NetworkInterface.GetAllNetworkInterfaces()[0];
+            if (!_Responses.Contains(response.Name))
+            {
+                _Responses.Add(response.Name, response);
+            }
+        }
 
-            System.Diagnostics.Debug.WriteLine("Webserver is running on " + interf.IPAddress + " /// DHCP: " + interf.IsDhcpEnabled);
+        //-------------------------------------------------------------
+        //-------------------------------------------------------------
+        //---------------Webserver expansion---------------------------
+        //-------------------------------------------------------------
+        //-------------------------------------------------------------
+        //-------------------Basic methods-----------------------------
+        /// <summary>
+        /// Removes a XMLResponse
+        /// </summary>
+        /// <param name="ResponseName">XMLResponse that has to be deleted</param>
+        public void RemoveResponse(String ResponseName)
+        {
+            if (_Responses.Contains(ResponseName))
+            {
+                _Responses.Remove(ResponseName);
+            }
+        }
 
-            this._PortNumber = portNumber;
+        /// <summary>
+        /// Example for web server expand method
+        /// Call via http://servername/echo?value='echovalue'
+        /// Submit a 'value' GET parameter
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="results"></param>
+        /// <returns></returns>
+        private bool Echo(RequestReceivedEventArgs e, JsonArray results)
+        {
+            if (e.Request.GetArguments.Contains("value") == true)
+                results.Add(e.Request.GetArguments["value"]);
+            else
+                results.Add("No 'value'-parameter transmitted to server");
+            return true;
+        }
 
-            ResponseListInitialize();
+        /// <summary>
+        /// Creates a response for a request and sends it
+        /// </summary>
+        /// <param name="e"></param>
+        private void HandleRequest(RequestReceivedEventArgs e)
+        {
+            string ip = e.Client.RemoteEndPoint.ToString();
 
-            _ListeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _ListeningSocket.Bind(new IPEndPoint(IPAddress.Any, portNumber));
-            _ListeningSocket.Listen(10);
+            Response response = null;
 
-            var webserverThread = new Thread(WaitingForRequest);
-            webserverThread.Start();
+            if (_Responses.Contains(e.Request.URL))
+            {
+                response = (Response)_Responses[e.Request.URL];
+            }
+            else
+            {
+                response = (Response)_Responses["FileResponse"];
+            }
+
+            if (response != null)
+            {
+                if (response.ConditionsCheckAndDataFill(e))
+                {
+                    response.SendResponse(e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initialize the basic functionalities of the web server
+        /// </summary>
+        private void ResponseListInitialize()
+        {
+            //KEEP THIS FIRST
+            AddResponse(new FileResponse());
+
+            AddResponse(new JSONResponse("echo", new JSONResponseCheck(Echo)));
         }
 
         /// <summary>
@@ -148,101 +227,12 @@ namespace NeonMika.Webserver
             }
         }
 
-        /// <summary>
-        /// Creates a response for a request and sends it
-        /// </summary>
-        /// <param name="e"></param>
-        private void HandleRequest(RequestReceivedEventArgs e)
-        {
-            string ip = e.Client.RemoteEndPoint.ToString();
-
-            Response response = null;
-
-            if (_Responses.Contains(e.Request.URL))
-            {
-                response = (Response)_Responses[e.Request.URL];
-            }
-            else
-            {
-                response = (Response)_Responses["FileResponse"];
-            }
-
-
-            if (response != null)
-            {
-                if (response.ConditionsCheckAndDataFill(e))
-                {
-                    response.SendResponse(e);
-                }
-            }
-        }
-
-        //-------------------------------------------------------------
-        //-------------------------------------------------------------
-        //---------------Webserver expansion---------------------------
-        //-------------------------------------------------------------
-        //-------------------------------------------------------------
-        //-------------------Basic methods-----------------------------
-
-        /// <summary>
-        /// Adds a XMLResponse
-        /// </summary>
-        /// <param name="response">XMLResponse that has to be added</param>
-        public void AddResponse(Response response)
-        {
-            if (!_Responses.Contains(response.Name))
-            {
-                _Responses.Add(response.Name, response);
-            }
-        }
-
-        /// <summary>
-        /// Removes a XMLResponse
-        /// </summary>
-        /// <param name="ResponseName">XMLResponse that has to be deleted</param>
-        public void RemoveResponse(String ResponseName)
-        {
-            if (_Responses.Contains(ResponseName))
-            {
-                _Responses.Remove(ResponseName);
-            }
-        }
-
         //-------------------------------------------------------------
         //-------------------------------------------------------------
         //-----------------------EXPAND this methods-------------------
-
-        /// <summary>
-        /// Initialize the basic functionalities of the web server
-        /// </summary>
-        private void ResponseListInitialize()
-        {
-            //KEEP THIS FIRST
-            AddResponse(new FileResponse());
-            
-            AddResponse(new JSONResponse("echo", new JSONResponseCheck(Echo)));
-        }
-
         //-------------------------------------------------------------
         //---------------------Expansion Methods-----------------------
         //-------------------------------------------------------------
         //----------Look at the echo method for xml example------------
-
-        /// <summary>
-        /// Example for web server expand method
-        /// Call via http://servername/echo?value='echovalue'
-        /// Submit a 'value' GET parameter
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="results"></param>
-        /// <returns></returns>
-        private bool Echo(RequestReceivedEventArgs e, JsonArray results)
-        {
-            if (e.Request.GetArguments.Contains("value") == true)
-                results.Add(e.Request.GetArguments["value"]);
-            else
-                results.Add("No 'value'-parameter transmitted to server");
-            return true;
-        }
     }
 }

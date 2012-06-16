@@ -5,7 +5,7 @@ namespace FastloadMedia.NETMF.Http
     /// <summary>
     /// A Json Array.
     /// Programmed by Huysentruit Wouter
-    /// 
+    ///
     /// Supported value types are those supported by the Json.ToJson method.
     /// See the Json.ToJson method for more information.
     /// </summary>

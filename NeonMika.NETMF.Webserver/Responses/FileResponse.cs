@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Text;
 using System.IO;
 using System.Net.Sockets;
 using NeonMika.Webserver.EventArgs;
-using Microsoft.SPOT;
 
 namespace NeonMika.Webserver.Responses
 {
@@ -16,7 +14,7 @@ namespace NeonMika.Webserver.Responses
             : base(name)
         { }
 
-        public override bool  ConditionsCheckAndDataFill(RequestReceivedEventArgs RequestArguments)
+        public override bool ConditionsCheckAndDataFill(RequestReceivedEventArgs RequestArguments)
         {
             return true;
         }
@@ -40,7 +38,7 @@ namespace NeonMika.Webserver.Responses
                     addBackSlash = true;
                 }
             }
-            
+
             string filePath = Settings.ROOT_PATH + url;
 
             //File found check
@@ -87,5 +85,3 @@ namespace NeonMika.Webserver.Responses
         }
     }
 }
-
-       

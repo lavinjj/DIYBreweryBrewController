@@ -1,6 +1,6 @@
 ﻿// Micro Liquid Crystal Library
 // http://microliquidcrystal.codeplex.com
-// Appache License Version 2.0 
+// Appache License Version 2.0
 
 using FusionWare;
 
@@ -8,18 +8,6 @@ namespace MicroLiquidCrystal
 {
     public abstract class BaseShifterLcdTransferProvider : DisposableObject, ILcdTransferProvider
     {
-        public class ShifterSetup
-        {
-            public ShifterPin Enable;
-            public ShifterPin RW;
-            public ShifterPin RS;
-            public ShifterPin BL;
-            public ShifterPin D4;
-            public ShifterPin D5;
-            public ShifterPin D6;
-            public ShifterPin D7;
-        }
-
         private readonly ShifterSetup _setup;
 
         protected BaseShifterLcdTransferProvider(ShifterSetup setup)
@@ -27,11 +15,10 @@ namespace MicroLiquidCrystal
             _setup = setup;
         }
 
-        /// <summary>
-        /// Implement this method on derived class.
-        /// </summary>
-        /// <param name="output"></param>
-        protected abstract void SendByte(byte output);
+        public bool FourBitMode
+        {
+            get { return true; }
+        }
 
         public void Send(byte data, bool mode, bool backlight)
         {
@@ -48,16 +35,11 @@ namespace MicroLiquidCrystal
             PulseEnable(output);
         }
 
-        void Write4Bits(ref int v, byte data)
-        {
-            // optimization
-            var s = _setup;
-
-            if ((data & 0x01) != 0) v |= (int)s.D4; else v &= ~(int)s.D4;
-            if ((data & 0x02) != 0) v |= (int)s.D5; else v &= ~(int)s.D5;
-            if ((data & 0x04) != 0) v |= (int)s.D6; else v &= ~(int)s.D6;
-            if ((data & 0x08) != 0) v |= (int)s.D7; else v &= ~(int)s.D7;
-        }
+        /// <summary>
+        /// Implement this method on derived class.
+        /// </summary>
+        /// <param name="output"></param>
+        protected abstract void SendByte(byte output);
 
         private void PulseEnable(int output)
         {
@@ -75,9 +57,27 @@ namespace MicroLiquidCrystal
             //Thread.Sleep(1);
         }
 
-        public bool FourBitMode
+        private void Write4Bits(ref int v, byte data)
         {
-            get { return true; }
+            // optimization
+            var s = _setup;
+
+            if ((data & 0x01) != 0) v |= (int)s.D4; else v &= ~(int)s.D4;
+            if ((data & 0x02) != 0) v |= (int)s.D5; else v &= ~(int)s.D5;
+            if ((data & 0x04) != 0) v |= (int)s.D6; else v &= ~(int)s.D6;
+            if ((data & 0x08) != 0) v |= (int)s.D7; else v &= ~(int)s.D7;
+        }
+
+        public class ShifterSetup
+        {
+            public ShifterPin BL;
+            public ShifterPin D4;
+            public ShifterPin D5;
+            public ShifterPin D6;
+            public ShifterPin D7;
+            public ShifterPin Enable;
+            public ShifterPin RS;
+            public ShifterPin RW;
         }
     }
 }

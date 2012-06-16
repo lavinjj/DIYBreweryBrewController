@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Text;
-using System.Net.Sockets;
-using System.Net;
-using System.Diagnostics;
-using System.IO;
 using System.Collections;
 
 namespace NeonMika.Webserver
@@ -12,10 +7,19 @@ namespace NeonMika.Webserver
 
     public class Request : IDisposable
     {
-        protected string method;
-        protected string url;
-        protected Hashtable postArguments = new Hashtable();
         protected Hashtable getArguments = new Hashtable();
+        protected string method;
+        protected Hashtable postArguments = new Hashtable();
+        protected string url;
+
+        /// <summary>
+        /// Creates request
+        /// </summary>
+        /// <param name="Data">Input from network</param>
+        public Request(char[] Data)
+        {
+            ProcessRequest(Data);
+        }
 
         /// <summary>
         /// Hashtable with all GET key-value pa in it
@@ -36,15 +40,6 @@ namespace NeonMika.Webserver
         }
 
         /// <summary>
-        /// URL of request without GET values
-        /// </summary>
-        public string URL
-        {
-            get { return url; }
-            private set { url = value; }
-        }
-
-        /// <summary>
         /// ToDo: Post-Values have to be copied into hashtable
         /// Full POST line is saved to "post"-key
         /// </summary>
@@ -54,14 +49,32 @@ namespace NeonMika.Webserver
         }
 
         /// <summary>
-        /// Creates request
+        /// URL of request without GET values
         /// </summary>
-        /// <param name="Data">Input from network</param>
-        public Request(char[] Data)
+        public string URL
         {
-            ProcessRequest(Data);
+            get { return url; }
+            private set { url = value; }
         }
-       
+
+        /// <summary>
+        /// builds arguments hash table
+        /// </summary>
+        /// <param name="value"></param>
+        private void FillGETHashtable(string url)
+        {
+            getArguments = new Hashtable();
+
+            string[] urlArguments = url.Split('&');
+            string[] keyValuePair;
+
+            for (int i = 0; i < urlArguments.Length; i++)
+            {
+                keyValuePair = urlArguments[i].Split('=');
+                getArguments.Add(keyValuePair[0], keyValuePair[1]);
+            }
+        }
+
         /// <summary>
         /// Sets up the request
         /// </summary>
@@ -94,35 +107,17 @@ namespace NeonMika.Webserver
             // Could look for any further headers in other lines of the request if required (e.g. User-Agent, Cookie)
         }
 
-        /// <summary>
-        /// builds arguments hash table
-        /// </summary>
-        /// <param name="value"></param>
-        private void FillGETHashtable(string url)
-        {
-            getArguments = new Hashtable();
-
-            string[] urlArguments = url.Split('&');
-            string[] keyValuePair;
-
-            for (int i = 0; i < urlArguments.Length; i++)
-            {
-                keyValuePair = urlArguments[i].Split('=');
-                getArguments.Add(keyValuePair[0], keyValuePair[1]);
-            }
-        }
-
         #region IDisposable Members
 
         public void Dispose()
         {
-            if(postArguments != null)
+            if (postArguments != null)
                 postArguments.Clear();
-            
-            if(getArguments != null)
+
+            if (getArguments != null)
                 getArguments.Clear();
         }
 
-        #endregion
+        #endregion IDisposable Members
     }
 }

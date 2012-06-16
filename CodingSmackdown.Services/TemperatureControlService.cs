@@ -1,38 +1,28 @@
 using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
-using CodingSmackdown.Sensors;
 using CodingSmackdown.PID;
+using CodingSmackdown.Sensors;
 
 namespace CodingSmackdown.Services
 {
     public class TemperatureControlService : ServiceBase
     {
         private readonly OutputHelper _outputHelper = null;
-
-        private Thermistor _thermistor = null;
+        private int _aTuneLookBack = 20;
+        private double _aTuneNoise = 1;
+        private double _aTuneStartValue = 100;
+        private double _aTuneStep = 50;
+        private PIDController.PID_Mode _autoTuneModeRemember = PIDController.PID_Mode.AUTOMATIC;
+        private double _kd = 2;
+        private double _ki = 0.5;
+        private double _kp = 2;
+        private double _output = 50;
         private PIDController _pid = null;
         private PIDAutoTune _pidAutoTune = null;
-
-        private double _output = 50;
+        private Thermistor _thermistor = null;
+        private bool _tuning = true;
         private int _windowSize = 5000;
         private long _windowStartTime;
-        private double _kp = 2;
-        private double _ki = 0.5;
-        private double _kd = 2;
-        private double _aTuneStep=50;
-        private double _aTuneNoise=1;
-        private double _aTuneStartValue=100;
-        private int _aTuneLookBack = 20;
-        private bool _tuning = true;
-        private PIDController.PID_Mode _autoTuneModeRemember = PIDController.PID_Mode.AUTOMATIC;
-
 
         public TemperatureControlService(OutputHelper helper)
         {
@@ -64,33 +54,8 @@ namespace CodingSmackdown.Services
             }
         }
 
-        private void ChangeAutoTune()
-        {
-            if (!_tuning)
-            {
-                //Set the output to the desired starting frequency.
-                _output = _aTuneStartValue;
-                _pidAutoTune.NoiseBand = _aTuneNoise;
-                _pidAutoTune.OutputStep = _aTuneStep;
-                _pidAutoTune.LookbackSeconds = _aTuneLookBack;
-
-                AutoTuneHelper(true);
-                
-                _tuning = true;
-            }
-            else
-            { 
-                //cancel autotune
-                _pidAutoTune.Cancel();
-
-                _tuning = false;
-
-                AutoTuneHelper(false);
-            }
-        }
-        
         protected override void Run()
-        {            
+        {
             while (true)
             {
                 try
@@ -113,7 +78,7 @@ namespace CodingSmackdown.Services
                         {
                             _tuning = false;
                         }
-                        
+
                         if (!_tuning)
                         { //we're done, set the tuning parameters
                             _kp = _pidAutoTune.Kp;
@@ -188,6 +153,31 @@ namespace CodingSmackdown.Services
             else
             {
                 _pid.Mode = _autoTuneModeRemember;
+            }
+        }
+
+        private void ChangeAutoTune()
+        {
+            if (!_tuning)
+            {
+                //Set the output to the desired starting frequency.
+                _output = _aTuneStartValue;
+                _pidAutoTune.NoiseBand = _aTuneNoise;
+                _pidAutoTune.OutputStep = _aTuneStep;
+                _pidAutoTune.LookbackSeconds = _aTuneLookBack;
+
+                AutoTuneHelper(true);
+
+                _tuning = true;
+            }
+            else
+            {
+                //cancel autotune
+                _pidAutoTune.Cancel();
+
+                _tuning = false;
+
+                AutoTuneHelper(false);
             }
         }
     }

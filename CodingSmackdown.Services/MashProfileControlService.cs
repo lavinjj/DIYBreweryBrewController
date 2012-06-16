@@ -1,12 +1,5 @@
 using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 
 namespace CodingSmackdown.Services
 {
@@ -14,13 +7,21 @@ namespace CodingSmackdown.Services
     {
         private readonly OutputHelper _outputHelper = null;
         private MashStep _currentStep = null;
-        private DateTime _stepStartTime = DateTime.MinValue;
-        private bool _stepsComplete = false;
         private bool _reachedStepTemperature = false;
+        private bool _stepsComplete = false;
+        private DateTime _stepStartTime = DateTime.MinValue;
 
         public MashProfileControlService(OutputHelper helper)
         {
             _outputHelper = helper;
+        }
+
+        public void StartMashCycle()
+        {
+            _currentStep = null;
+            _stepStartTime = DateTime.MinValue;
+            _stepsComplete = false;
+            _reachedStepTemperature = false;
         }
 
         protected override void Run()
@@ -31,7 +32,7 @@ namespace CodingSmackdown.Services
                 {
                     if (PinManagement.heaterEngaged)
                     {
-                        if((PinManagement.mashSteps != null) && (PinManagement.mashSteps.Steps.Count > 0))
+                        if ((PinManagement.mashSteps != null) && (PinManagement.mashSteps.Steps.Count > 0))
                         {
                             _currentStep = PinManagement.mashSteps.CurrentStep;
 
@@ -99,14 +100,6 @@ namespace CodingSmackdown.Services
                 // wait til next reading cycle
                 Thread.Sleep((int)SystemSettings.MinutesBetweenReadings);
             }
-        }
-    
-        public void StartMashCycle()
-        {
-            _currentStep = null;
-            _stepStartTime = DateTime.MinValue;
-            _stepsComplete = false;
-            _reachedStepTemperature = false;
         }
     }
 }

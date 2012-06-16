@@ -1,152 +1,34 @@
 using System;
-using Microsoft.SPOT;
 using System.IO;
 
 namespace CodingSmackdown.Services
 {
     public class Settings
     {
-        public const string SETTINGS_FILE = @"\SD\settings.txt";
-        public const string PROBE_FILE = @"\SD\probe.txt";
         public const int MINUTES_MULTIPLIER = 60000;
-
-        private int timeZoneOffset;
-
-        public int TimeZoneOffset
-        {
-            get { return timeZoneOffset; }
-            set { timeZoneOffset = value; }
-        }
-
-        private float minutesBetweenReadings;
-
-        public float MinutesBetweenReadings
-        {
-            get { return minutesBetweenReadings * MINUTES_MULTIPLIER; }
-            set { minutesBetweenReadings = value; }
-        }
-
-        private float temperatureOffset;
-
-        public float TemperatureOffset
-        {
-            get { return temperatureOffset; }
-            set { temperatureOffset = value; }
-        }
-
-        private float temperatureHeaterOffset;
-
-        public float TemperatureHeaterOffset
-        {
-            get { return temperatureHeaterOffset; }
-            set { temperatureHeaterOffset = value; }
-        }
-
-        private string historyFilename;
-
-        public string HistoryFilename
-        {
-            get { return historyFilename; }
-            set { historyFilename = value; }
-        }
-
-        private string ntpServerName;
-
-        public string NTPServerName
-        {
-            get { return ntpServerName; }
-            set { ntpServerName = value; }
-        }
-        
-        private int minutesBetweenNTPUpdate;
-
-        public int MinutesBetweenNTPUpdate
-        {
-            get { return minutesBetweenNTPUpdate * MINUTES_MULTIPLIER; }
-            set { minutesBetweenNTPUpdate = value; }
-        }
-        
-        private string netBiosName;
-
-        public string NetBiosName
-        {
-            get { return netBiosName; }
-            set { netBiosName = value; }
-        }
-
-        private bool enableDHCP;
-
-        public bool EnableDHCP
-        {
-            get { return enableDHCP; }
-            set { enableDHCP = value; }
-        }
-
-        private string staticIPAddress;
-
-        public string StaticIPAddress
-        {
-            get { return staticIPAddress; }
-            set { staticIPAddress = value; }
-        }
-
-        private string subnetMask;
-
-        public string SubnetMask
-        {
-            get { return subnetMask; }
-            set { subnetMask = value; }
-        }
-
-        private string defaultGateway;
-
-        public string DefaultGateway
-        {
-            get { return defaultGateway; }
-            set { defaultGateway = value; }
-        }
-
-        private string primaryDNSAddress;
-
-        public string PrimaryDNSAddress
-        {
-            get { return primaryDNSAddress; }
-            set { primaryDNSAddress = value; }
-        }
-
-        private string secondaryDNSAddress;
-
-        public string SecondaryDNSAddress
-        {
-            get { return secondaryDNSAddress; }
-            set { secondaryDNSAddress = value; }
-        }
-
-        private float voltageReference;
-
-        public float VoltageReference
-        {
-            get { return voltageReference; }
-            set { voltageReference = value; }
-        }
-
-        private float padResistance;
-
-        public float PadResistance
-        {
-            get { return padResistance; }
-            set { padResistance = value; }
-        }
-
-        private float resistanceRT;
-
-        public float ResistanceRT
-        {
-            get { return resistanceRT; }
-            set { resistanceRT = value; }
-        }
-
+        public const string PROBE_FILE = @"\SD\probe.txt";
+        public const string SETTINGS_FILE = @"\SD\settings.txt";
         private float coefficientA;
+        private float coefficientB;
+        private float coefficientC;
+        private float coefficientD;
+        private string defaultGateway;
+        private bool enableDHCP;
+        private string historyFilename;
+        private int minutesBetweenNTPUpdate;
+        private float minutesBetweenReadings;
+        private string netBiosName;
+        private string ntpServerName;
+        private float padResistance;
+        private string primaryDNSAddress;
+        private float resistanceRT;
+        private string secondaryDNSAddress;
+        private string staticIPAddress;
+        private string subnetMask;
+        private float temperatureHeaterOffset;
+        private float temperatureOffset;
+        private int timeZoneOffset;
+        private float voltageReference;
 
         public float CoefficientA
         {
@@ -154,15 +36,11 @@ namespace CodingSmackdown.Services
             set { coefficientA = value; }
         }
 
-        private float coefficientB;
-
         public float CoefficientB
         {
             get { return coefficientB; }
             set { coefficientB = value; }
         }
-
-        private float coefficientC;
 
         public float CoefficientC
         {
@@ -170,14 +48,158 @@ namespace CodingSmackdown.Services
             set { coefficientC = value; }
         }
 
-        private float  coefficientD;
-
         public float CoefficientD
         {
             get { return coefficientD; }
             set { coefficientD = value; }
         }
 
+        public string DefaultGateway
+        {
+            get { return defaultGateway; }
+            set { defaultGateway = value; }
+        }
+
+        public bool EnableDHCP
+        {
+            get { return enableDHCP; }
+            set { enableDHCP = value; }
+        }
+
+        public string HistoryFilename
+        {
+            get { return historyFilename; }
+            set { historyFilename = value; }
+        }
+
+        public int MinutesBetweenNTPUpdate
+        {
+            get { return minutesBetweenNTPUpdate * MINUTES_MULTIPLIER; }
+            set { minutesBetweenNTPUpdate = value; }
+        }
+
+        public float MinutesBetweenReadings
+        {
+            get { return minutesBetweenReadings * MINUTES_MULTIPLIER; }
+            set { minutesBetweenReadings = value; }
+        }
+
+        public string NetBiosName
+        {
+            get { return netBiosName; }
+            set { netBiosName = value; }
+        }
+
+        public string NTPServerName
+        {
+            get { return ntpServerName; }
+            set { ntpServerName = value; }
+        }
+
+        public float PadResistance
+        {
+            get { return padResistance; }
+            set { padResistance = value; }
+        }
+
+        public string PrimaryDNSAddress
+        {
+            get { return primaryDNSAddress; }
+            set { primaryDNSAddress = value; }
+        }
+
+        public float ResistanceRT
+        {
+            get { return resistanceRT; }
+            set { resistanceRT = value; }
+        }
+
+        public string SecondaryDNSAddress
+        {
+            get { return secondaryDNSAddress; }
+            set { secondaryDNSAddress = value; }
+        }
+
+        public string StaticIPAddress
+        {
+            get { return staticIPAddress; }
+            set { staticIPAddress = value; }
+        }
+
+        public string SubnetMask
+        {
+            get { return subnetMask; }
+            set { subnetMask = value; }
+        }
+
+        public float TemperatureHeaterOffset
+        {
+            get { return temperatureHeaterOffset; }
+            set { temperatureHeaterOffset = value; }
+        }
+
+        public float TemperatureOffset
+        {
+            get { return temperatureOffset; }
+            set { temperatureOffset = value; }
+        }
+
+        public int TimeZoneOffset
+        {
+            get { return timeZoneOffset; }
+            set { timeZoneOffset = value; }
+        }
+
+        public float VoltageReference
+        {
+            get { return voltageReference; }
+            set { voltageReference = value; }
+        }
+
+        public static bool TryParseFloat(string s, out float result)
+        {
+            bool success = true;
+            int decimalDiv = 0;
+            result = 0;
+            bool negative = false;
+            try
+            {
+                for (int i = 0; i < s.Length; i++)
+                {
+                    if (s[i] == '.' && decimalDiv == 0)
+                    {
+                        decimalDiv = 1;
+                    }
+                    else if (s[i] == '-')
+                    {
+                        negative = true;
+                    }
+                    else if (s[i] < '0' || s[i] > '9')
+                    {
+                        success = false;
+                    }
+                    else
+                    {
+                        result = result * 10;
+                        decimalDiv = decimalDiv * 10;
+                        result += (int)(s[i] - '0');
+                    }
+                }
+                if (decimalDiv > 0)
+                {
+                    result = (float)result / decimalDiv;
+                }
+                if (negative)
+                {
+                    result = result * -1.0F;
+                }
+            }
+            catch
+            {
+                success = false;
+            }
+            return success;
+        }
 
         public void loadSettings()
         {
@@ -187,7 +209,7 @@ namespace CodingSmackdown.Services
                 {
                     string line;
                     string[] setting;
-                    // Read and display lines from the file until the end of 
+                    // Read and display lines from the file until the end of
                     // the file is reached.
                     while ((line = file.ReadLine()) != null)
                     {
@@ -195,9 +217,9 @@ namespace CodingSmackdown.Services
                         {
                             float tempValue = 0.0F;
                             setting = line.Split('=');
-                            if((setting != null) && (setting.Length > 1))
+                            if ((setting != null) && (setting.Length > 1))
                             {
-                                switch(setting[0])
+                                switch (setting[0])
                                 {
                                     case "TimeZoneOffset":
                                         TimeZoneOffset = Convert.ToInt32(setting[1]);
@@ -215,7 +237,7 @@ namespace CodingSmackdown.Services
                                         }
                                         break;
                                     case "TemperatureHeaterOffset":
-                                        if(TryParseFloat(setting[1], out tempValue))
+                                        if (TryParseFloat(setting[1], out tempValue))
                                         {
                                             TemperatureHeaterOffset = tempValue;
                                         }
@@ -233,7 +255,7 @@ namespace CodingSmackdown.Services
                                         NetBiosName = setting[1];
                                         break;
                                     case "EnableDHCP":
-                                        if(setting[1].ToLower().Equals("true"))
+                                        if (setting[1].ToLower().Equals("true"))
                                         {
                                             EnableDHCP = true;
                                         }
@@ -274,7 +296,7 @@ namespace CodingSmackdown.Services
                 {
                     string line;
                     string[] setting;
-                    // Read and display lines from the file until the end of 
+                    // Read and display lines from the file until the end of
                     // the file is reached.
                     while ((line = file.ReadLine()) != null)
                     {
@@ -425,51 +447,5 @@ namespace CodingSmackdown.Services
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
-
-        public static bool TryParseFloat(string s, out float result)
-        {
-            bool success = true;
-            int decimalDiv = 0;
-            result = 0;
-            bool negative = false;
-            try
-            {
-                for (int i = 0; i < s.Length; i++)
-                {
-                    if (s[i] == '.' && decimalDiv == 0)
-                    {
-                        decimalDiv = 1;
-                    }
-                    else if (s[i] == '-')
-                    {
-                        negative = true;
-                    }
-                    else if (s[i] < '0' || s[i] > '9')
-                    {
-                        success = false;
-                    }
-                    else
-                    {
-                        result = result * 10;
-                        decimalDiv = decimalDiv * 10;
-                        result += (int)(s[i] - '0');
-                    }
-                }
-                if (decimalDiv > 0)
-                {
-                    result = (float)result / decimalDiv;
-                }
-                if (negative)
-                {
-                    result = result * -1.0F;
-                }
-            }
-            catch
-            {
-                success = false;
-            }
-            return success;
-        }
-
     }
 }

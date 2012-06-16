@@ -1,16 +1,9 @@
 using System;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using NeonMika.Webserver.EventArgs;
 using System.Collections;
-using System.Threading;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 using CodingSmackdown.Services;
 using FastloadMedia.NETMF.Http;
-using Microsoft.SPOT.Net.NetworkInformation;
+using NeonMika.Webserver.EventArgs;
 using NetMf.CommonExtensions;
-
 
 namespace CodingSmackdown.TemperatureController
 {
@@ -30,24 +23,24 @@ namespace CodingSmackdown.TemperatureController
 
                 // mashProfile=0:122:15,1:135:15,2:148:60,3:170:15,4:225:90,
 
-                if(e.Request.GetArguments.Contains("mashProfile"))
+                if (e.Request.GetArguments.Contains("mashProfile"))
                 {
                     string temp = e.Request.GetArguments["mashProfile"].ToString();
                     temp = temp.Replace("%3A", ":");
                     temp = temp.Replace("%2C", ",");
-                    
+
                     steps = temp.Split(',');
 
-                    if(steps != null)
+                    if (steps != null)
                     {
-                        foreach(string step in steps)
+                        foreach (string step in steps)
                         {
                             stepData = step.Split(':');
-                            if((stepData != null) && (stepData.Length > 2))
+                            if ((stepData != null) && (stepData.Length > 2))
                             {
                                 newMashStep = new MashStep();
                                 Settings.TryParseFloat(stepData[1], out tempValue);
-                                newMashStep.StepNumber = Convert.ToInt32(stepData[0]);;
+                                newMashStep.StepNumber = Convert.ToInt32(stepData[0]); ;
                                 newMashStep.Temperature = tempValue;
                                 newMashStep.Time = Convert.ToInt32(stepData[2]);
                                 PinManagement.mashSteps.Steps.Add(newMashStep);

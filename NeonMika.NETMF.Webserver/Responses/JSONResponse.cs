@@ -1,25 +1,22 @@
 using System;
-using System.Text;
-using System.IO;
 using System.Net.Sockets;
-using System.Collections;
-using NeonMika.Webserver.EventArgs;
-using Microsoft.SPOT;
+using System.Text;
 using FastloadMedia.NETMF.Http;
+using NeonMika.Webserver.EventArgs;
 
 namespace NeonMika.Webserver.Responses
 {
     public class JSONResponse : Response
     {
+        private JSONResponseCheck _CheckResponse;
+        private JsonArray _Pairs;
+
         public JSONResponse(string name, JSONResponseCheck method)
             : base(name)
         {
             this._CheckResponse = method;
             _Pairs = new JsonArray();
         }
-
-        private JSONResponseCheck _CheckResponse;
-        private JsonArray _Pairs;
 
         /// <summary>
         /// Execute this to check if SendResponse should be executed

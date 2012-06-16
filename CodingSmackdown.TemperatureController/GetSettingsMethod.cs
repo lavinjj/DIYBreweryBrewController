@@ -1,12 +1,7 @@
 using System;
-using Microsoft.SPOT;
-using NeonMika.Webserver.EventArgs;
-using System.Collections;
-using System.Threading;
-using SecretLabs.NETMF.Hardware;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
 using CodingSmackdown.Services;
 using FastloadMedia.NETMF.Http;
+using NeonMika.Webserver.EventArgs;
 
 namespace CodingSmackdown.TemperatureController
 {

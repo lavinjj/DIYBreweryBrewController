@@ -23,11 +23,11 @@
 //   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 //   SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 //   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-//   TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
+//   TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
 //   BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-//   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+//   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 //   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
-//   DAMAGE. 
+//   DAMAGE.
 //
 
 using System;
@@ -43,6 +43,30 @@ namespace FusionWare
     /// </remarks>
     public abstract class DisposableObject : IDisposable
     {
+        private bool _IsDisposed = false;
+
+        /// <summary>Finalizer for this class</summary>
+        /// <remarks>
+        /// Use C# destructor syntax for finalization code.
+        /// This destructor will run only if the Dispose method
+        /// does not get called to suppress finalization.
+        /// </remarks>
+        ~DisposableObject()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(false);
+        }
+
+        /// <summary>Indicates if this driver is disposed</summary>
+        /// <value>true if the Driver is disposed already; false if not</value>
+        public bool IsDisposed
+        {
+            get { return _IsDisposed; }
+            protected set { _IsDisposed = value; }
+        }
+
         /// <summary>Releases unmanaged resources for this object</summary>
         /// <remarks>
         /// This releases the underlying managed and unmanaged resources.
@@ -88,37 +112,14 @@ namespace FusionWare
         ///        this.UnmanagedItem.ReleaseResources();
         ///    }
         ///}
-        ///</code> 
+        ///</code>
         /// </example>
         protected abstract void Dispose(bool disposing);
-
-        /// <summary>Finalizer for this class</summary>
-        /// <remarks>
-        /// Use C# destructor syntax for finalization code.
-        /// This destructor will run only if the Dispose method
-        /// does not get called to suppress finalization.
-        /// </remarks>
-        ~DisposableObject()
-        {
-            // Do not re-create Dispose clean-up code here.
-            // Calling Dispose(false) is optimal in terms of
-            // readability and maintainability.
-            Dispose(false);
-        }
-
-        /// <summary>Indicates if this driver is disposed</summary>
-        /// <value>true if the Driver is disposed already; false if not</value>
-        public bool IsDisposed
-        {
-            get { return _IsDisposed; }
-            protected set { _IsDisposed = value; }
-        }
-        private bool _IsDisposed = false;
 
         /// <summary>Utility method to throw an excpetion if this instance is already disposed/closed</summary>
         protected void ThrowIfDisposed()
         {
-            if(this._IsDisposed)
+            if (this._IsDisposed)
                 throw new InvalidOperationException("Cannot use a disposed Object");
         }
     }
