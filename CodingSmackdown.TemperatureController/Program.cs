@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Threading;
+using CodingSmackdown.Sensors;
 using CodingSmackdown.Services;
+using CodingSmackdown.Services.Interfaces;
 using MicroLiquidCrystal;
 using Microsoft.SPOT.Hardware;
 using NeonMika.Webserver;
@@ -12,7 +14,8 @@ namespace CodingSmackdown.TemperatureController
 {
     public class Program
     {
-        private static OutputHelper _displayHelper = null;
+        private static IOutputHelper _displayHelper = null;
+        private static ITemperatureSensor _thermistor = null;
         private static DateTime allStopButtonLastPushed = DateTime.MinValue;
         private static DateTime engageHeaterButtonLastPushed = DateTime.MinValue;
         private static Thread mainThread;
@@ -111,7 +114,11 @@ namespace CodingSmackdown.TemperatureController
 
             Thread.Sleep(5000);
 
-            TemperatureControlService tempLogger = new TemperatureControlService(_displayHelper);
+            _thermistor = new Thermistor(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
+            _thermistor.VoltageReference = 3.3f;
+            _thermistor.ResistanceReference = 1470000;
+
+            TemperatureControlService tempLogger = new TemperatureControlService(_displayHelper, _thermistor);
             tempLogger.SystemSettings = settings;
             tempLogger.Start();
 

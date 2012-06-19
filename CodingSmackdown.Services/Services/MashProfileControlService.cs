@@ -1,17 +1,19 @@
 using System;
 using System.Threading;
+using CodingSmackdown.Sensors;
+using CodingSmackdown.Services.Interfaces;
 
 namespace CodingSmackdown.Services
 {
     public class MashProfileControlService : ServiceBase
     {
-        private readonly OutputHelper _outputHelper = null;
+        private readonly IOutputHelper _outputHelper = null;
         private MashStep _currentStep = null;
         private bool _reachedStepTemperature = false;
         private bool _stepsComplete = false;
         private DateTime _stepStartTime = DateTime.MinValue;
 
-        public MashProfileControlService(OutputHelper helper)
+        public MashProfileControlService(IOutputHelper helper)
         {
             _outputHelper = helper;
         }
@@ -78,16 +80,9 @@ namespace CodingSmackdown.Services
                                     // we have reached the step temperature
                                     // update the start time
                                     _stepStartTime = DateTime.Now;
-                                    // udpate the flag
+                                    // update the flag
                                     _reachedStepTemperature = true;
                                 }
-                            }
-                            else
-                            {
-                                // we are not at the step temperature so set the step temperature
-                                PinManagement.setTemperature = _currentStep.Temperature;
-                                // update the start time
-                                _stepStartTime = DateTime.Now;
                             }
                         }
                     }
@@ -97,7 +92,7 @@ namespace CodingSmackdown.Services
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
 
-                // wait til next reading cycle
+                // wait till next reading cycle
                 Thread.Sleep((int)SystemSettings.MinutesBetweenReadings);
             }
         }

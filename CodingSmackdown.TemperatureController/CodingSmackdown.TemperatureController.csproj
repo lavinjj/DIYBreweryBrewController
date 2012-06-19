@@ -51,6 +51,10 @@
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CodingSmackdown.Sensors\CodingSmackdown.Sensors.csproj">
+      <Project>{841B43FE-745A-4C7A-B616-578DED22756F}</Project>
+      <Name>CodingSmackdown.Sensors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JSONLib\JSONLib.csproj">
       <Project>{48B8AB1A-D086-4058-AB66-E3B10B9A8DC1}</Project>
       <Name>JSONLib</Name>

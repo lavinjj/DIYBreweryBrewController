@@ -28,6 +28,10 @@ namespace CodingSmackdown.Sensors
 
         public float RequiredVoltage { get; protected set; }
 
+        public float ResistanceReference { get; set; }
+
+        public float VoltageReference { get; set; }
+
         public void Dispose()
         {
             sensor.Dispose();

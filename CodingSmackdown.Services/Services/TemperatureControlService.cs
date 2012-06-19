@@ -2,12 +2,13 @@ using System;
 using System.Threading;
 using CodingSmackdown.PID;
 using CodingSmackdown.Sensors;
+using CodingSmackdown.Services.Interfaces;
 
 namespace CodingSmackdown.Services
 {
     public class TemperatureControlService : ServiceBase
     {
-        private readonly OutputHelper _outputHelper = null;
+        private readonly IOutputHelper _outputHelper = null;
         private int _aTuneLookBack = 20;
         private double _aTuneNoise = 1;
         private double _aTuneStartValue = 100;
@@ -19,18 +20,16 @@ namespace CodingSmackdown.Services
         private double _output = 50;
         private PIDController _pid = null;
         private PIDAutoTune _pidAutoTune = null;
-        private Thermistor _thermistor = null;
+        private ITemperatureSensor _thermistor = null;
         private bool _tuning = true;
         private int _windowSize = 5000;
         private long _windowStartTime;
 
-        public TemperatureControlService(OutputHelper helper)
+        public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor)
         {
             _outputHelper = helper;
 
-            _thermistor = new Thermistor(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
-            _thermistor.VoltageReference = 3.3f;
-            _thermistor.ResistanceReference = 1470000;
+            _thermistor = sensor;
 
             _pid = new PIDController(PinManagement.currentTemperatureSensor, _output, PinManagement.setTemperature, _kp, _ki, _kd, PIDController.PID_Direction.DIRECT);
 

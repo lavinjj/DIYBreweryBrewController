@@ -8,6 +8,10 @@ namespace CodingSmackdown.Sensors
 
         int MinimumTemperatureCapability { get; }
 
+        float ResistanceReference { get; set; }
+
+        float VoltageReference { get; set; }
+
         float GetTemperatureInC();
 
         float GetTemperatureInF();

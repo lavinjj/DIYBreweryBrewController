@@ -1,11 +1,12 @@
 using System;
 using System.IO;
 using System.Text;
+using CodingSmackdown.Services.Interfaces;
 using MicroLiquidCrystal;
 
 namespace CodingSmackdown.Services
 {
-    public class OutputHelper
+    public class OutputHelper : IOutputHelper
     {
         private static object s_IncLock = new object();
         private Lcd _displayController = null;
