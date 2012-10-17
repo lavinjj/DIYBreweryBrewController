@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONLib", "JSONLib\JSONLib.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.Services", "CodingSmackdown.Services\CodingSmackdown.Services.csproj", "{995CB370-8779-4D1C-8DC4-9F291868DC23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.BrewController", "CodingSmackdown.TemperatureController\CodingSmackdown.BrewController.csproj", "{6BF92A0D-D785-40A7-B99A-7ACC7598B524}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.BrewController", "CodingSmackdown.BrewController\CodingSmackdown.BrewController.csproj", "{6BF92A0D-D785-40A7-B99A-7ACC7598B524}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.Sensors", "CodingSmackdown.Sensors\CodingSmackdown.Sensors.csproj", "{841B43FE-745A-4C7A-B616-578DED22756F}"
 EndProject
