@@ -4,13 +4,12 @@ using System.Threading;
 using CodingSmackdown.Sensors;
 using CodingSmackdown.Services;
 using CodingSmackdown.Services.Interfaces;
-using MicroLiquidCrystal;
 using Microsoft.SPOT.Hardware;
 using NeonMika.Webserver;
 using NeonMika.Webserver.Responses;
-using SecretLabs.NETMF.Hardware.NetduinoPlus;
+using CodingSmackdown.Drivers;
 
-namespace CodingSmackdown.TemperatureController
+namespace CodingSmackdown.BrewController
 {
     public class Program
     {
@@ -20,56 +19,25 @@ namespace CodingSmackdown.TemperatureController
         private static DateTime engageHeaterButtonLastPushed = DateTime.MinValue;
         private static Thread mainThread;
         private static DateTime setTemperatureUpButtonLastPushed = DateTime.MinValue;
-        private static DateTime setTemperatureUpDownLastPushed = DateTime.MinValue;
-
-        public static void AllStop_OnInterrupt(uint data1, uint data2, DateTime time)
-        {
-            if (allStopButtonLastPushed.AddMilliseconds(50) > time)
-                return;
-            // button press state received in data2
-            // 0 = open, 1 = pressed
-            if (data2 == 1)
-            {
-                // PinManagement.heaterOnOffPort.SetDutyCycle(0);
-                PinManagement.heaterOnOffPort.Write(false);
-                PinManagement.heaterEngaged = false;
-            }
-            _displayHelper.DisplayText("Heater|Dis-Engaged");
-            allStopButtonLastPushed = time;
-        }
-
-        public static void EngageHeaterButton_OnInterrupt(uint data1, uint data2, DateTime time)
-        {
-            if (engageHeaterButtonLastPushed.AddMilliseconds(50) > time)
-                return;
-            // button press state received in data2
-            // 0 = open, 1 = pressed
-            if (data2 == 1)
-            {
-                PinManagement.heaterEngaged = true;
-            }
-            _displayHelper.DisplayText("Heater|Engaged");
-            engageHeaterButtonLastPushed = time;
-        }
+        private static DateTime setTemperatureDownButtonLastPushed = DateTime.MinValue;
 
         public static void Main()
         {
             mainThread = Thread.CurrentThread;
 
-            // create the transfer provider
-            var lcdProvider = new Shifter74Hc595LcdTransferProvider(SPI_Devices.SPI1, SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_D10);
-
             // create the LCD interface
-            var lcd = new Lcd(lcdProvider);
+            var lcd = new SPI_VFDisplay(SPI.SPI_module.SPI1, SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_D10, SPI_VFDisplay.Brightness.VFD_BRIGHTNESS25);
 
             // set up the LCD's number of columns and rows:
-            lcd.Begin(16, 2);
+            lcd.begin(20, 2, SPI_VFDisplay.Brightness.VFD_BRIGHTNESS25);
+            // set up the LCD's number of columns and rows: 
+            lcd.clear();
             // create the output helper and attach tot he LCD Display
             _displayHelper = new OutputHelper();
             _displayHelper.DisplayController = lcd;
 
             // Print a message to the LCD.
-            _displayHelper.DisplayText("DIY Brewery|Temp Controller");
+            _displayHelper.DisplayText("The DIY Brewery|Brew Controller");
 
             Thread.Sleep(5000);
 
@@ -115,11 +83,10 @@ namespace CodingSmackdown.TemperatureController
             Thread.Sleep(5000);
 
             _thermistor = new Thermistor(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
-            _thermistor.VoltageReference = 3.3f;
-            _thermistor.ResistanceReference = 1470000;
+            _thermistor.ResistanceReference = settings.PadResistance;
+            _thermistor.VoltageReference = settings.VoltageReference;
 
-            TemperatureControlService tempLogger = new TemperatureControlService(_displayHelper, _thermistor);
-            tempLogger.SystemSettings = settings;
+            TemperatureControlService tempLogger = new TemperatureControlService(_displayHelper, _thermistor, settings);
             tempLogger.Start();
 
             _displayHelper.DisplayText("Temp Monitor|Started");
@@ -136,35 +103,24 @@ namespace CodingSmackdown.TemperatureController
             mainThread.Suspend();
         }
 
-        public static void TemperatureSetDown_OnInterrupt(uint data1, uint data2, DateTime time)
+      public static void EngageHeaterButton_OnInterrupt(uint data1, uint data2, DateTime time) 
         {
-            if (setTemperatureUpDownLastPushed.AddMilliseconds(50) > time)
+            if (engageHeaterButtonLastPushed.AddMilliseconds(200) > time)
                 return;
             // button press state received in data2
             // 0 = open, 1 = pressed
             if (data2 == 1)
             {
-                PinManagement.setTemperature--;
-                PinManagement.alarmSounded = false;
-                if (PinManagement.setTemperature <= 0.0)
-                {
-                    PinManagement.setTemperature = 0.0F;
-                }
+                PinManagement.heaterEngaged = true;
             }
-
-            StringBuilder message = new StringBuilder();
-            message.Append("Set Temp|");
-            message.Append(PinManagement.setTemperature.ToString("f2"));
-            _displayHelper.DisplayText(message.ToString());
-
-            setTemperatureUpDownLastPushed = time;
+            _displayHelper.DisplayText("Heater|Engaged");
+            engageHeaterButtonLastPushed = time;
         }
 
         public static void TemperatureSetUp_OnInterrupt(uint data1, uint data2, DateTime time)
         {
-            if (setTemperatureUpButtonLastPushed.AddMilliseconds(50) > time)
+            if (setTemperatureUpButtonLastPushed.AddMilliseconds(200) > time)
                 return;
-
             // button press state received in data2
             // 0 = open, 1 = pressed
             if (data2 == 1)
@@ -183,6 +139,47 @@ namespace CodingSmackdown.TemperatureController
             _displayHelper.DisplayText(message.ToString());
 
             setTemperatureUpButtonLastPushed = time;
+        }
+
+        public static void TemperatureSetDown_OnInterrupt(uint data1, uint data2, DateTime time)
+        {
+            if (setTemperatureDownButtonLastPushed.AddMilliseconds(200) > time)
+                return;
+
+            // button press state received in data2
+            // 0 = open, 1 = pressed
+            if (data2 == 1)
+            {
+                PinManagement.setTemperature--;
+                PinManagement.alarmSounded = false;
+                 if (PinManagement.setTemperature <= 0.0)
+                {
+                    PinManagement.setTemperature = 0.0F;
+                }
+            }
+
+            StringBuilder message = new StringBuilder();
+            message.Append("Set Temp|");
+            message.Append(PinManagement.setTemperature.ToString("f2"));
+            _displayHelper.DisplayText(message.ToString());
+
+            setTemperatureDownButtonLastPushed = time;
+        }
+
+        public static void AllStop_OnInterrupt(uint data1, uint data2, DateTime time)
+        {
+            if (allStopButtonLastPushed.AddMilliseconds(200) > time)
+                return;
+            // button press state received in data2
+            // 0 = open, 1 = pressed
+            if (data2 == 1)
+            {
+                // PinManagement.heaterOnOffPort.SetDutyCycle(0);
+                PinManagement.heaterOnOffPort.Write(false);
+                PinManagement.heaterEngaged = false;
+            }
+            _displayHelper.DisplayText("Heater|Dis-Engaged");
+            allStopButtonLastPushed = time;
         }
     }
 }

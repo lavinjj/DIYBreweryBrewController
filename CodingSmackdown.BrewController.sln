@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeonMika.NETMF.Webserver", "NeonMika.NETMF.Webserver\NeonMika.NETMF.Webserver.csproj", "{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONLib", "JSONLib\JSONLib.csproj", "{48B8AB1A-D086-4058-AB66-E3B10B9A8DC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.Services", "CodingSmackdown.Services\CodingSmackdown.Services.csproj", "{995CB370-8779-4D1C-8DC4-9F291868DC23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.TemperatureController", "CodingSmackdown.TemperatureController\CodingSmackdown.TemperatureController.csproj", "{6BF92A0D-D785-40A7-B99A-7ACC7598B524}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroLiquidCrystal", "MicroLiquidCrystal\MicroLiquidCrystal.csproj", "{B4B72543-E638-44F1-B096-9BBB6BD4698B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.BrewController", "CodingSmackdown.TemperatureController\CodingSmackdown.BrewController.csproj", "{6BF92A0D-D785-40A7-B99A-7ACC7598B524}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.Sensors", "CodingSmackdown.Sensors\CodingSmackdown.Sensors.csproj", "{841B43FE-745A-4C7A-B616-578DED22756F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.PID", "CodingSmackdown.PID\CodingSmackdown.PID.csproj", "{53307E38-F6E6-4876-8285-A9B68EEE15E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodingSmackdown.Drivers", "CodingSmackdown.Drivers\CodingSmackdown.Drivers\CodingSmackdown.Drivers.csproj", "{FF135C26-98C8-4501-ABFE-B005225E2FAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeonMika.NETMF.Webserver", "NeonMika.NETMF.Webserver\NeonMika.NETMF.Webserver.csproj", "{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{48B8AB1A-D086-4058-AB66-E3B10B9A8DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{48B8AB1A-D086-4058-AB66-E3B10B9A8DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48B8AB1A-D086-4058-AB66-E3B10B9A8DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,10 +35,6 @@ Global
 		{6BF92A0D-D785-40A7-B99A-7ACC7598B524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BF92A0D-D785-40A7-B99A-7ACC7598B524}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6BF92A0D-D785-40A7-B99A-7ACC7598B524}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{B4B72543-E638-44F1-B096-9BBB6BD4698B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4B72543-E638-44F1-B096-9BBB6BD4698B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4B72543-E638-44F1-B096-9BBB6BD4698B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4B72543-E638-44F1-B096-9BBB6BD4698B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{841B43FE-745A-4C7A-B616-578DED22756F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{841B43FE-745A-4C7A-B616-578DED22756F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{841B43FE-745A-4C7A-B616-578DED22756F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +43,14 @@ Global
 		{53307E38-F6E6-4876-8285-A9B68EEE15E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53307E38-F6E6-4876-8285-A9B68EEE15E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53307E38-F6E6-4876-8285-A9B68EEE15E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF135C26-98C8-4501-ABFE-B005225E2FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF135C26-98C8-4501-ABFE-B005225E2FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF135C26-98C8-4501-ABFE-B005225E2FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF135C26-98C8-4501-ABFE-B005225E2FAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

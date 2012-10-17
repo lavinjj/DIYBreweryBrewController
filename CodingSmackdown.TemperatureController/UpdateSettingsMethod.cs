@@ -6,7 +6,7 @@ using Microsoft.SPOT.Hardware;
 using Microsoft.SPOT.Net.NetworkInformation;
 using NeonMika.Webserver.EventArgs;
 
-namespace CodingSmackdown.TemperatureController
+namespace CodingSmackdown.BrewController
 {
     public class UpdateSettingsMethod
     {

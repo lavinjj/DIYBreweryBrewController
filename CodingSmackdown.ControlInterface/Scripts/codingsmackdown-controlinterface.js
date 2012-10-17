@@ -102,6 +102,7 @@ cs.viewModel = function () {
     mashProfile = ko.observableArray([]),
     mashTemperature = ko.observable(''),
     mashStepLength = ko.observable(''),
+    temperatureData = ko.observableArray([]),
 
     gridViewModel = new ko.simpleGrid.viewModel({
         data: this.mashProfile,
@@ -124,16 +125,47 @@ cs.viewModel = function () {
 
     // methods
     updateCurrentTemp = function () {
-        // show the activity widget
-        $('#loadingWidget').show();
         // send a request to the server to get the current temperature from the sensor
         $.getJSON('temperature', '', function (j) {
             // walk the responses and check to see if there was a failure
             for (var i = 0; i < j.length; i++) {
                 sensorData(new cs.sensorDataFromWire(j[i]));
+
+                var temperature = parseFloat(j[i].temperatureFahrenheit);
+                temperatureData().push(temperature);
+
+                // passing in the url string as the jqPlot data argument is a handy
+                // shortcut for our renderer.  You could also have used the
+                // "dataRendererOptions" option to pass in the url.
+                $('#chartdiv').html('');
+
+                var plot2 = $.jqplot('chartdiv', [cs.viewModel.temperatureData()], {
+                      // Give the plot a title.
+                      title: 'Temperature',
+                      // You can specify options for all axes on the plot at once with
+                      // the axesDefaults object.  Here, we're using a canvas renderer
+                      // to draw the axis label which allows rotated text.
+                      axesDefaults: {
+                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+                      },
+                      // An axes object holds options for all axes.
+                      // Allowable axes are xaxis, x2axis, yaxis, y2axis, y3axis, ...
+                      // Up to 9 y axes are supported.
+                      axes: {
+                        // options for each axis are specified in seperate option objects.
+                        xaxis: {
+                          label: "Time",
+                          // Turn off "padding".  This will allow data point to lie on the
+                          // edges of the grid.  Default padding is 1.2 and will keep all
+                          // points inside the bounds of the grid.
+                          pad: 0
+                        },
+                        yaxis: {
+                          label: "Degrees F"
+                        }
+                      }
+                    });
             }
-            // hide the activity widget
-            $('#loadingWidget').hide();
         });
     },
 
@@ -202,6 +234,7 @@ cs.viewModel = function () {
     return {
         sensorData: sensorData,
         settings: settings,
+        temperatureData: temperatureData,
         updateCurrentTemp: updateCurrentTemp,
         getSettings: getSettings,
         updateSettings: updateSettings,
@@ -214,71 +247,6 @@ cs.viewModel = function () {
         updateMashProfile: updateMashProfile
     };
 } ();
-
-
-// Our ajax data renderer which here retrieves a text file.
-// it could contact any source and pull data, however.
-// The options argument isn't used in this renderer.
-var ajaxDataRenderer = function (url, plot, options) {
-    var ret = null;
-    $.ajax({
-        // have to use synchronous here, else the function 
-        // will return before the data is fetched
-        type: 'GET',
-        async: false,
-        url: url,
-        success: function (text) {
-            // array to return the data in
-            var response = [];
-            var tempcurve = [];
-            var heating = [];
-            var temperature;
-            var heat;
-            // split the csv file into fields that 
-            // we can parse
-            var fields = text.split(/\n/);
-
-            fields.pop(fields.length - 1);
-
-            var tempData = fields.slice(0, fields.length);
-
-            for (var j = 0; j < tempData.length; j += 1) {
-
-                var dataFields = tempData[j].split(',');
-                temperature = parseFloat(dataFields[4]);
-                heat = parseInt(dataFields[6]);
-                tempcurve.push(temperature);
-                heating.push(heat * 100);
-            }
-
-            response.push(tempcurve);
-            // response.push(heating);
-            ret = response;
-        }
-    });
-    return ret;
-};
-
-function updateHistory() {
-    // show the activity widget
-    $('#loadingWidget').show();
-
-    // The url for our json data
-    var jsonurl = 'temperatures.txt';
-
-    // passing in the url string as the jqPlot data argument is a handy
-    // shortcut for our renderer.  You could also have used the
-    // "dataRendererOptions" option to pass in the url.
-    var plot2 = $.jqplot('chartdiv', jsonurl, {
-        dataRenderer: ajaxDataRenderer,
-        dataRendererOptions: {
-            unusedOptionalUrl: jsonurl
-        }
-    });
-
-    // hide the activity widget
-    $('#loadingWidget').hide();
-}
 
 $(document).ready(function () {
     // set up the tabs on the page
@@ -293,8 +261,6 @@ $(document).ready(function () {
     cs.viewModel.getSettings();
     cs.viewModel.updateCurrentTemp();
     ko.applyBindings(cs.viewModel);
-    // pull the history
-    updateHistory();
-    // update the graph every 10 minutes
-    setInterval('updateHistory()', 30000);
+    // update the graph every 30 seconds
+    setInterval('cs.viewModel.updateCurrentTemp()', 30000);
 });

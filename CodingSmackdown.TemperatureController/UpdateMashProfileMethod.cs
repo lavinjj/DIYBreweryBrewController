@@ -5,7 +5,7 @@ using FastloadMedia.NETMF.Http;
 using NeonMika.Webserver.EventArgs;
 using NetMf.CommonExtensions;
 
-namespace CodingSmackdown.TemperatureController
+namespace CodingSmackdown.BrewController
 {
     public class UpdateMashProfileMethod
     {

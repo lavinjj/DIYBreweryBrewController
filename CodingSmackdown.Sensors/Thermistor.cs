@@ -1,4 +1,6 @@
 using System.Threading;
+using SecretLabs.NETMF.Hardware;
+using SecretLabs.NETMF.Hardware.NetduinoPlus;
 using Microsoft.SPOT.Hardware;
 
 namespace CodingSmackdown.Sensors
@@ -57,7 +59,7 @@ namespace CodingSmackdown.Sensors
                 Thread.Sleep(10);
             }
             // calculate the temperature
-            double milliVolts = tempReading / 100;
+            double milliVolts = tempReading / 100000;
 
             double vPad = VoltageReference - milliVolts;
 

@@ -25,12 +25,13 @@ namespace CodingSmackdown.Services
         private int _windowSize = 5000;
         private long _windowStartTime;
 
-        public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor)
+      public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor, Settings systemSettings)
         {
+            SystemSettings = systemSettings;
             _outputHelper = helper;
 
             _thermistor = sensor;
-
+          
             _pid = new PIDController(PinManagement.currentTemperatureSensor, _output, PinManagement.setTemperature, _kp, _ki, _kd, PIDController.PID_Direction.DIRECT);
 
             _windowSize = (int)SystemSettings.MinutesBetweenReadings;
@@ -69,6 +70,9 @@ namespace CodingSmackdown.Services
 
                     if (_tuning)
                     {
+                        _outputHelper.DisplayText("PID|Auto Tuning");
+                        Thread.Sleep(5000);
+
                         _pidAutoTune.Input = PinManagement.currentTemperatureSensor;
 
                         int val = (_pidAutoTune.Runtime());
@@ -126,6 +130,14 @@ namespace CodingSmackdown.Services
                             // display heat is on
                             _outputHelper.DisplayText("Heat Off");
                         }
+
+                        if ((PinManagement.setTemperature <= PinManagement.currentTemperatureSensor) && (!PinManagement.alarmSounded))
+                        {
+                            PinManagement.buzzerPulsePort.Write(true);
+                            Thread.Sleep(5000);
+                            PinManagement.buzzerPulsePort.Write(false);
+                            PinManagement.alarmSounded = true;
+                        }
                     }
 
                     // update the log file
@@ -139,7 +151,7 @@ namespace CodingSmackdown.Services
                 }
 
                 // Give up the clock so that the other threads can do their work
-                Thread.Sleep(10);
+                Thread.Sleep(_windowSize);
             }
         }
 

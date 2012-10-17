@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyName>TemperatureController</AssemblyName>
+    <AssemblyName>BrewController</AssemblyName>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CodingSmackdown.TemperatureController</RootNamespace>
+    <RootNamespace>CodingSmackdown.BrewController</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>CodingSmackdown.TemperatureController.Program</StartupObject>
+    <StartupObject>CodingSmackdown.BrewController.Program</StartupObject>
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
@@ -51,6 +51,10 @@
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CodingSmackdown.Drivers\CodingSmackdown.Drivers\CodingSmackdown.Drivers.csproj">
+      <Project>{FF135C26-98C8-4501-ABFE-B005225E2FAB}</Project>
+      <Name>CodingSmackdown.Drivers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CodingSmackdown.Sensors\CodingSmackdown.Sensors.csproj">
       <Project>{841B43FE-745A-4C7A-B616-578DED22756F}</Project>
       <Name>CodingSmackdown.Sensors</Name>
@@ -59,17 +63,13 @@
       <Project>{48B8AB1A-D086-4058-AB66-E3B10B9A8DC1}</Project>
       <Name>JSONLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MicroLiquidCrystal\MicroLiquidCrystal.csproj">
-      <Project>{B4B72543-E638-44F1-B096-9BBB6BD4698B}</Project>
-      <Name>MicroLiquidCrystal</Name>
+    <ProjectReference Include="..\CodingSmackdown.Services\CodingSmackdown.Services.csproj">
+      <Project>{995CB370-8779-4D1C-8DC4-9F291868DC23}</Project>
+      <Name>CodingSmackdown.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\NeonMika.NETMF.Webserver\NeonMika.NETMF.Webserver.csproj">
       <Project>{7F9FBC4B-0DBD-499F-AB06-FD5C1ED26A67}</Project>
       <Name>NeonMika.NETMF.Webserver</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CodingSmackdown.Services\CodingSmackdown.Services.csproj">
-      <Project>{995CB370-8779-4D1C-8DC4-9F291868DC23}</Project>
-      <Name>CodingSmackdown.Services</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

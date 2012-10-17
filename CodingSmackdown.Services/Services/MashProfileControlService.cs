@@ -57,9 +57,9 @@ namespace CodingSmackdown.Services
                                     if (timeInterval.Minutes >= _currentStep.Time)
                                     {
                                         // pulse pezio for five seconds to indicate profile step complete
-                                        PinManagement.buzzerPort.Write(true);
+                                        PinManagement.buzzerSolidPort.Write(true);
                                         Thread.Sleep(5000);
-                                        PinManagement.buzzerPort.Write(false);
+                                        PinManagement.buzzerSolidPort.Write(false);
                                         // get the next step
                                         _currentStep = PinManagement.mashSteps.Next();
                                         // set the start time

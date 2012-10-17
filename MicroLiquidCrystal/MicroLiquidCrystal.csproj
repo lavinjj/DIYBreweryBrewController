@@ -10,14 +10,6 @@
     <ProjectGuid>{B4B72543-E638-44F1-B096-9BBB6BD4698B}</ProjectGuid>
     <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,8 +33,14 @@
   <ItemGroup>
     <Compile Include="BaseShifterLcdTransferProvider.cs" />
     <Compile Include="FusionWare.SPOT\DisposableObject.cs" />
+    <Compile Include="FusionWare.SPOT\I2CBus.cs" />
+    <Compile Include="FusionWare.SPOT\I2CDeviceDriver.cs" />
+    <Compile Include="FusionWare.SPOT\Stopwatch.cs" />
+    <Compile Include="GpioLcdTransferProvider.cs" />
     <Compile Include="ILcdTransferProvider.cs" />
     <Compile Include="Lcd.cs" />
+    <Compile Include="MCP23008Expander.cs" />
+    <Compile Include="MCP23008LcdTransferProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shifter74Hc595LcdTransferProvider.cs" />
     <Compile Include="ShifterPin.cs" />
@@ -52,5 +50,4 @@
     <Reference Include="Microsoft.SPOT.Native">
     </Reference>
   </ItemGroup>
-  <ItemGroup />
 </Project>

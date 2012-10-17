@@ -7,7 +7,8 @@ namespace CodingSmackdown.Services
     {
         static public bool alarmSounded = false;
         static public InterruptPort allStopButton = new InterruptPort(Pins.GPIO_PIN_D2, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
-        static public OutputPort buzzerPort = new OutputPort(Pins.GPIO_PIN_D5, false);
+        static public OutputPort buzzerPulsePort = new OutputPort(Pins.GPIO_PIN_D5, false);
+        static public OutputPort buzzerSolidPort = new OutputPort(Pins.GPIO_PIN_D6, false);
         static public float currentTemperatureSensor = 0.0F;
 
         // Define an Interrupt Port to watch when Pins D1, D2, D3, D4 Change States
@@ -23,7 +24,7 @@ namespace CodingSmackdown.Services
 
         static public bool isHeating = false;
         static public MashSteps mashSteps = new MashSteps();
-        static public float setTemperature = 0.0F;
+        static public float setTemperature = 75.0F;
         static public InterruptPort setTemperatureUpButton = new InterruptPort(Pins.GPIO_PIN_D3, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         static public InterruptPort setTemperatureUpDown = new InterruptPort(Pins.GPIO_PIN_D4, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         static public float temperatureCelsiusSensor = 0.0F;

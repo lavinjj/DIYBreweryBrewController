@@ -2,17 +2,17 @@ using System;
 using System.IO;
 using System.Text;
 using CodingSmackdown.Services.Interfaces;
-using MicroLiquidCrystal;
+using CodingSmackdown.Drivers;
 
 namespace CodingSmackdown.Services
 {
     public class OutputHelper : IOutputHelper
     {
         private static object s_IncLock = new object();
-        private Lcd _displayController = null;
+        private SPI_VFDisplay _displayController = null;
         private string _historyFileName = String.Empty;
 
-        public Lcd DisplayController
+        public SPI_VFDisplay DisplayController
         {
             get { return _displayController; }
             set { _displayController = value; }
@@ -28,19 +28,19 @@ namespace CodingSmackdown.Services
         {
             lock (s_IncLock)
             {
-                _displayController.Clear();
-                _displayController.Home();
+                _displayController.clear();
+                _displayController.home();
                 // handle two lines being sent to the lcd display
                 if (message.IndexOf('|') > 0)
                 {
                     string[] output = message.Split('|');
-                    _displayController.Write(output[0]);
-                    _displayController.SetCursorPosition(0, 1);
-                    _displayController.Write(output[1]);
+                    _displayController.print(output[0]);
+                    _displayController.setCursor(0, 1);
+                    _displayController.print(output[1]);
                 }
                 else
                 {
-                    _displayController.Write(message);
+                    _displayController.print(message);
                 }
             }
         }
@@ -49,20 +49,20 @@ namespace CodingSmackdown.Services
         {
             lock (s_IncLock)
             {
-                _displayController.Clear();
-                _displayController.Home();
+                _displayController.clear();
+                _displayController.home();
 
                 StringBuilder displayString = new StringBuilder();
                 displayString.Append("Set Temp: ");
                 displayString.Append(PinManagement.setTemperature.ToString("f2"));
 
-                _displayController.Write(displayString.ToString());
+                _displayController.print(displayString.ToString());
 
                 displayString = new StringBuilder();
                 displayString.Append("Cnt Temp: ");
                 displayString.Append(PinManagement.currentTemperatureSensor.ToString("f2"));
-                _displayController.SetCursorPosition(0, 1);
-                _displayController.Write(displayString.ToString());
+                _displayController.setCursor(0, 1);
+                _displayController.print(displayString.ToString());
             }
         }
 

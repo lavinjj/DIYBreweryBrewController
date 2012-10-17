@@ -129,7 +129,7 @@
     </Content>
     <Content Include="index.html" />
     <Content Include="probe.txt" />
-    <Content Include="Scripts\codingsmackdown.controlinterface.js" />
+    <Content Include="Scripts\codingsmackdown-controlinterface.js" />
     <Content Include="Scripts\excanvas.js" />
     <Content Include="Scripts\excanvas.min.js" />
     <Content Include="Scripts\i18n\grid.locale-ar.js" />

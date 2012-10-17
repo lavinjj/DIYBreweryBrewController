@@ -3,7 +3,7 @@ using CodingSmackdown.Services;
 using FastloadMedia.NETMF.Http;
 using NeonMika.Webserver.EventArgs;
 
-namespace CodingSmackdown.TemperatureController
+namespace CodingSmackdown.BrewController
 {
     public class GetSettingsMethod
     {

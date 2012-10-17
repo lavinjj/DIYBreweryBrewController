@@ -45,7 +45,7 @@ namespace CodingSmackdown.Sensors
 
             for (int i = 0; i < 100; i++)
             {
-                totalReading += sensor.Read();
+                totalReading += (sensor.Read() * 1023);
                 Thread.Sleep(10);
             }
 

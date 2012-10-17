@@ -1,12 +1,12 @@
 using System;
-using MicroLiquidCrystal;
 using Microsoft.SPOT;
+using CodingSmackdown.Drivers;
 
 namespace CodingSmackdown.Services.Interfaces
 {
     public interface IOutputHelper
     {
-        Lcd DisplayController { get; set; }
+        SPI_VFDisplay DisplayController { get; set; }
 
         string HistoryFileName { get; set; }
 
