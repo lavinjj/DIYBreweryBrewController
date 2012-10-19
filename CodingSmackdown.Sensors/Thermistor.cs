@@ -62,10 +62,19 @@ namespace CodingSmackdown.Sensors
             double milliVolts = tempReading / 100000;
 
             double vPad = VoltageReference - milliVolts;
+            // Use the following if your thermistor circuit is hooked up as follows
+            // GND|-----|Thermistor|--|A0|--|/\/\Ref Resistance/\/\|--|+3.3V
+            //double circuitCurrent = vPad / ResistanceReference;
+            //
+            //double thermResistance = milliVolts / circuitCurrent;
+            // end changes
 
-            double circuitCurrent = vPad / ResistanceReference;
+            // Use the following if your thermistor circuit is hooked up as follows
+            // +3.3V|-----|Thermistor|--|A0|--|/\/\Ref Resistance/\/\|--|GND
+            double circuitCurrent = milliVolts / ResistanceReference;
 
-            double thermResistance = milliVolts / circuitCurrent;
+            double thermResistance = vPad / circuitCurrent;
+            // end changes
 
             double tempCelsius = rtot(thermResistance);
 

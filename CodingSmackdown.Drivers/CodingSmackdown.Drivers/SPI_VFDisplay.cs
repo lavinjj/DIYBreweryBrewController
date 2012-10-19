@@ -127,7 +127,7 @@ namespace CodingSmackdown.Drivers
 
             // turn the display on with no cursor or blinking default
             _displaycontrol = VFD_DISPLAYON;
-            _cursormode = VFD_CURSORON;
+            _cursormode = VFD_CURSOROFF;
             _blinkmode = VFD_BLINKOFF;
             _shiftmode = VFD_ENTRYLEFT;
             _incrementmode = VFD_ENTRYSHIFTDECREMENT;

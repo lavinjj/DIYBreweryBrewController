@@ -22,7 +22,7 @@ namespace CodingSmackdown.Services
         private PIDAutoTune _pidAutoTune = null;
         private ITemperatureSensor _thermistor = null;
         private bool _tuning = true;
-        private int _windowSize = 5000;
+        private int _windowSize = 1000;
         private long _windowStartTime;
 
       public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor, Settings systemSettings)
@@ -34,7 +34,8 @@ namespace CodingSmackdown.Services
           
             _pid = new PIDController(PinManagement.currentTemperatureSensor, _output, PinManagement.setTemperature, _kp, _ki, _kd, PIDController.PID_Direction.DIRECT);
 
-            _windowSize = (int)SystemSettings.MinutesBetweenReadings;
+            // using default of 1 second between readings
+            // _windowSize = (int)SystemSettings.MinutesBetweenReadings;
 
             _pid.SetOutputLimits(0, _windowSize);
 
@@ -71,7 +72,7 @@ namespace CodingSmackdown.Services
                     if (_tuning)
                     {
                         _outputHelper.DisplayText("PID|Auto Tuning");
-                        Thread.Sleep(5000);
+                        Thread.Sleep(1000);
 
                         _pidAutoTune.Input = PinManagement.currentTemperatureSensor;
 
@@ -83,11 +84,27 @@ namespace CodingSmackdown.Services
                         }
 
                         if (!_tuning)
-                        { //we're done, set the tuning parameters
+                        { 
+                            //we're done, set the tuning parameters
                             _kp = _pidAutoTune.Kp;
+                            SystemSettings.PIDKp = (float)_pidAutoTune.Kp; 
+
                             _ki = _pidAutoTune.Ki;
+                            SystemSettings.PIDKi = (float)_pidAutoTune.Ki; 
+                            
                             _kd = _pidAutoTune.Kd;
+                            SystemSettings.PIDKd = (float)_pidAutoTune.Kd;
+
+                            SystemSettings.saveSettings();
+
                             _pid.SetTunings(_kp, _ki, _kd);
+
+                            _outputHelper.DisplayText("kp: " + _kp.ToString("f3"));
+                            Thread.Sleep(5000);
+                            _outputHelper.DisplayText("ki: " + _ki.ToString("f3"));
+                            Thread.Sleep(5000);
+                            _outputHelper.DisplayText("kd: " + _kd.ToString("f3"));
+                            Thread.Sleep(5000);
 
                             AutoTuneHelper(false);
                         }
@@ -111,7 +128,7 @@ namespace CodingSmackdown.Services
                             _windowStartTime += _windowSize;
                         }
 
-                        if (_output < (DateTime.Now.Ticks - _windowStartTime))
+                        if (_output > 0)
                         {
                             // turn the heating element on
                             PinManagement.heaterOnOffPort.Write(true);
@@ -130,14 +147,6 @@ namespace CodingSmackdown.Services
                             // display heat is on
                             _outputHelper.DisplayText("Heat Off");
                         }
-
-                        if ((PinManagement.setTemperature <= PinManagement.currentTemperatureSensor) && (!PinManagement.alarmSounded))
-                        {
-                            PinManagement.buzzerPulsePort.Write(true);
-                            Thread.Sleep(5000);
-                            PinManagement.buzzerPulsePort.Write(false);
-                            PinManagement.alarmSounded = true;
-                        }
                     }
 
                     // update the log file
@@ -151,7 +160,10 @@ namespace CodingSmackdown.Services
                 }
 
                 // Give up the clock so that the other threads can do their work
-                Thread.Sleep(_windowSize);
+                if (_output > 0)
+                {
+                    Thread.Sleep((int)(_windowSize * _output));
+                }
             }
         }
 

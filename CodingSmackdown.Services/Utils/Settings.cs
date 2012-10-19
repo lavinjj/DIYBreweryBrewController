@@ -29,6 +29,9 @@ namespace CodingSmackdown.Services
         private float temperatureOffset;
         private int timeZoneOffset;
         private float voltageReference;
+        private float pidKP;
+        private float pidKI;
+        private float pidKD;
 
         public float CoefficientA
         {
@@ -155,6 +158,25 @@ namespace CodingSmackdown.Services
             get { return voltageReference; }
             set { voltageReference = value; }
         }
+
+        public float PIDKp
+        {
+            get { return pidKP; }
+            set { pidKP = value; }
+        }
+
+        public float PIDKi
+        {
+            get { return pidKI; }
+            set { pidKI = value; }
+        }
+
+        public float PIDKd
+        {
+            get { return pidKD; }
+            set { pidKD = value; }
+        }
+
 
         public static bool TryParseFloat(string s, out float result)
         {
@@ -350,6 +372,24 @@ namespace CodingSmackdown.Services
                                             CoefficientD = tempValue;
                                         }
                                         break;
+                                    case "PIDKP":
+                                        if (TryParseFloat(setting[1], out tempValue))
+                                        {
+                                            PIDKp = tempValue;
+                                        }
+                                        break;
+                                    case "PIDKI":
+                                        if (TryParseFloat(setting[1], out tempValue))
+                                        {
+                                            PIDKi = tempValue;
+                                        }
+                                        break;
+                                    case "PIDKD":
+                                        if (TryParseFloat(setting[1], out tempValue))
+                                        {
+                                            PIDKd = tempValue;
+                                        }
+                                        break;
                                 }
                             }
                         }
@@ -440,6 +480,15 @@ namespace CodingSmackdown.Services
 
                     file.Write("CoefficientD=");
                     file.WriteLine(CoefficientD);
+
+                    file.Write("PIDKP=");
+                    file.WriteLine(PIDKp);
+                    
+                    file.Write("PIDKI=");
+                    file.WriteLine(PIDKi);
+                
+                    file.Write("PIDKD=");
+                    file.WriteLine(PIDKd);
                 }
             }
             catch (Exception ex)
