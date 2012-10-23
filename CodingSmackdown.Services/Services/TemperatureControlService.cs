@@ -14,14 +14,14 @@ namespace CodingSmackdown.Services
         private double _aTuneStartValue = 100;
         private double _aTuneStep = 50;
         private PIDController.PID_Mode _autoTuneModeRemember = PIDController.PID_Mode.AUTOMATIC;
-        private double _kd = 2;
-        private double _ki = 0.5;
-        private double _kp = 2;
+        private double _kd = 0;
+        private double _ki = 461.53;
+        private double _kp = 450;
         private double _output = 50;
         private PIDController _pid = null;
         private PIDAutoTune _pidAutoTune = null;
         private ITemperatureSensor _thermistor = null;
-        private bool _tuning = true;
+        private bool _tuning = false;
         private int _windowSize = 1000;
         private long _windowStartTime;
 
@@ -37,7 +37,7 @@ namespace CodingSmackdown.Services
             // using default of 1 second between readings
             // _windowSize = (int)SystemSettings.MinutesBetweenReadings;
 
-            _pid.SetOutputLimits(0, _windowSize);
+            _pid.SetOutputLimits(0, 100);
 
             _pid.Mode = PIDController.PID_Mode.AUTOMATIC;
 
@@ -160,10 +160,7 @@ namespace CodingSmackdown.Services
                 }
 
                 // Give up the clock so that the other threads can do their work
-                if (_output > 0)
-                {
-                    Thread.Sleep((int)(_windowSize * _output));
-                }
+                Thread.Sleep((int)(_windowSize * System.Math.Abs(_output)));
             }
         }
 

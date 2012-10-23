@@ -1,1 +1,1 @@
-﻿[{"sensorMilliVolts": "711.740", "timeOfReading": "11\/29\/2011 04:09:31", "temperatureFahrenheit": "70.112", "temperatureCelsius": "21.174", "isHeating" : "true", "currentMashStep" : "0", "currentMashTemp" : "148", "currentMashTime" : "60" }]
+﻿[{"sensorMilliVolts": "711.740", "timeOfReading": "11\/29\/2011 04:09:31", "temperatureFahrenheit": "70.112", "temperatureCelsius": "21.174", "isHeating" : "true", "currentMashStep" : "0", "currentMashTemp" : "148", "currentMashTime" : "60", "pidOutput" : "50" }]

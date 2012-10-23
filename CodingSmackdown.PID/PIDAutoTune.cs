@@ -73,7 +73,7 @@ namespace CodingSmackdown.PID
         }
 
         /// <summary>
-        /// Determies if the tuning parameters returned will be PI (D=0)
+        /// Determines if the tuning parameters returned will be PI (D=0)
         /// or PID.  (0=PI, 1=PID)
         /// </summary>
         public ControllerType ControlType { get; set; }
@@ -125,8 +125,8 @@ namespace CodingSmackdown.PID
         }
 
         /// <summary>
-        /// the autotune will ignore signal chatter smaller than this value
-        /// this should be acurately set
+        /// the auto tune will ignore signal chatter smaller than this value
+        /// this should be accurately set
         /// </summary>
         public double NoiseBand { get; set; }
 
@@ -147,7 +147,7 @@ namespace CodingSmackdown.PID
         }
 
         /// <summary>
-        /// Similar to the PID Compue function, returns non 0 when done
+        /// Similar to the PID Compute function, returns non 0 when done
         /// </summary>
         /// <returns></returns>
         public int Runtime()
@@ -196,7 +196,7 @@ namespace CodingSmackdown.PID
                 }
             }
 
-            //oscillate the output based on the input's relation to the setpoint
+            //oscillate the output based on the input's relation to the set point
             if (refVal > _setpoint + NoiseBand)
             {
                 Output = _outputStart - OutputStep;
@@ -272,7 +272,7 @@ namespace CodingSmackdown.PID
 
             if (_justchanged && _peakCount > 2)
             {
-                //we've transitioned.  check if we can autotune based on the last peaks
+                //we've transitioned.  check if we can auto tune based on the last peaks
                 double avgSeparation = (System.Math.Abs(_peaks[_peakCount - 1] - _peaks[_peakCount - 2]) + System.Math.Abs(_peaks[_peakCount - 2] - _peaks[_peakCount - 3])) / 2;
 
                 if (avgSeparation < 0.05 * (_absMax - _absMin))
