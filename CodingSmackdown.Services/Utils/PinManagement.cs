@@ -1,3 +1,4 @@
+using System;
 using Microsoft.SPOT.Hardware;
 using SecretLabs.NETMF.Hardware.NetduinoPlus;
 
@@ -10,6 +11,7 @@ namespace CodingSmackdown.Services
         static public OutputPort buzzerPulsePort = new OutputPort(Pins.GPIO_PIN_D5, false);
         static public OutputPort buzzerSolidPort = new OutputPort(Pins.GPIO_PIN_D6, false);
         static public float currentTemperatureSensor = 0.0F;
+        static public float currentPIDOuput = 0;
 
         // Define an Interrupt Port to watch when Pins D1, D2, D3, D4 Change States
         // Don't use a glitch filter
@@ -28,18 +30,6 @@ namespace CodingSmackdown.Services
         static public InterruptPort setTemperatureUpButton = new InterruptPort(Pins.GPIO_PIN_D3, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         static public InterruptPort setTemperatureUpDown = new InterruptPort(Pins.GPIO_PIN_D4, true, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         static public float temperatureCelsiusSensor = 0.0F;
-        //static public OutputPort Digital5 = new OutputPort(Pins.GPIO_PIN_D5, false);
-        //static public OutputPort Digital6 = new OutputPort(Pins.GPIO_PIN_D6, false);
-        //static public OutputPort Digital7 = new OutputPort(Pins.GPIO_PIN_D7, false);
-        //static public OutputPort Digital8 = new OutputPort(Pins.GPIO_PIN_D8, false);
-        //static public OutputPort Digital9 = new OutputPort(Pins.GPIO_PIN_D9, false);
-        //static public OutputPort Digital10 = new OutputPort(Pins.GPIO_PIN_D10, false);
-        //static public OutputPort Digital11= new OutputPort(Pins.GPIO_PIN_D11, false);
-        //static public OutputPort Digital12 = new OutputPort(Pins.GPIO_PIN_D12, false);
-        //static public OutputPort Digital13 = new OutputPort(Pins.GPIO_PIN_D13, false);
-        //static public OutputPort OnboardLED = new OutputPort(Pins.ONBOARD_LED, false);
-
-        //static public SecretLabs.NETMF.Hardware.AnalogInput temperatureSensorPort = new SecretLabs.NETMF.Hardware.AnalogInput(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A0);
-        //static public SecretLabs.NETMF.Hardware.AnalogInput temperatureSensorPort2 = new SecretLabs.NETMF.Hardware.AnalogInput(SecretLabs.NETMF.Hardware.NetduinoPlus.Pins.GPIO_PIN_A1);
+        static public DateTime currentMashStepStartTime = DateTime.Now; 
     }
 }

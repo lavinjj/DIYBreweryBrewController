@@ -54,6 +54,11 @@ namespace CodingSmackdown.Services
                                 {
                                     // check how long at the step temperature
                                     TimeSpan timeInterval = _currentTime.Subtract(_stepStartTime);
+
+                                    _outputHelper.DisplayText("Mash Step: " + _currentStep.StepNumber.ToString());
+                                    _outputHelper.DisplayText("Mash Temp: " + _currentStep.Temperature.ToString("f2"));
+                                    _outputHelper.DisplayText("Time: " + timeInterval.Minutes.ToString());
+                                    
                                     if (timeInterval.Minutes >= _currentStep.Time)
                                     {
                                         // pulse pezio for five seconds to indicate profile step complete
@@ -64,7 +69,7 @@ namespace CodingSmackdown.Services
                                         _currentStep = PinManagement.mashSteps.Next();
                                         // set the start time
                                         _stepStartTime = DateTime.Now;
-                                        // udpate the flag
+                                        // update the flag
                                         _reachedStepTemperature = false;
                                         // no more steps turn off the heater
                                         if (_currentStep == null)
@@ -80,8 +85,17 @@ namespace CodingSmackdown.Services
                                     // we have reached the step temperature
                                     // update the start time
                                     _stepStartTime = DateTime.Now;
+                                    PinManagement.currentMashStepStartTime = _stepStartTime;
                                     // update the flag
                                     _reachedStepTemperature = true;
+                                }
+                            }
+                            else
+                            {
+                                if (!_reachedStepTemperature)
+                                {
+                                    // reset the minutes remaining time
+                                    PinManagement.currentMashStepStartTime = _currentTime;
                                 }
                             }
                         }

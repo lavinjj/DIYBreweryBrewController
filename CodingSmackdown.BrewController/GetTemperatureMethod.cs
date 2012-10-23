@@ -18,12 +18,14 @@ namespace CodingSmackdown.BrewController
                 reading.Add("temperatureCelsius", PinManagement.temperatureCelsiusSensor.ToString("f2"));
                 reading.Add("temperatureFahrenheit", PinManagement.currentTemperatureSensor.ToString("f2"));
                 reading.Add("isHeating", PinManagement.isHeating.ToString());
+                reading.Add("pidOutput", PinManagement.currentPIDOuput.ToString("f2"));
 
                 if ((PinManagement.mashSteps != null) && (PinManagement.mashSteps.CurrentStep != null))
                 {
                     reading.Add("currentMashStep", PinManagement.mashSteps.CurrentStep.StepNumber.ToString());
                     reading.Add("currentMashTemp", PinManagement.mashSteps.CurrentStep.Temperature.ToString("f2"));
-                    reading.Add("currentMashTime", PinManagement.mashSteps.CurrentStep.Time.ToString());
+                    TimeSpan timeInterval = DateTime.Now.Subtract(PinManagement.currentMashStepStartTime);
+                    reading.Add("currentMashTime", timeInterval.Minutes);
                 }
 
                 h.Add(reading);

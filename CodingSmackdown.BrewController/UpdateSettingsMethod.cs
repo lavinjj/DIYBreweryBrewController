@@ -183,6 +183,21 @@ namespace CodingSmackdown.BrewController
                     Settings.TryParseFloat(e.Request.GetArguments["coefficientD"].ToString(), out tempValue);
                     settings.CoefficientD = tempValue;
                 }
+                if (e.Request.GetArguments.Contains("kpValue"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["kpValue"].ToString(), out tempValue);
+                    settings.PIDKp = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("kiValue"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["kiValue"].ToString(), out tempValue);
+                    settings.PIDKi = tempValue;
+                }
+                if (e.Request.GetArguments.Contains("kdValue"))
+                {
+                    Settings.TryParseFloat(e.Request.GetArguments["kdValue"].ToString(), out tempValue);
+                    settings.PIDKd = tempValue;
+                }
 
                 // save the new device settings
                 settings.saveSettings();

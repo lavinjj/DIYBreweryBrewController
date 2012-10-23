@@ -38,6 +38,9 @@ namespace CodingSmackdown.BrewController
                 settingsValues.Add("coefficientB", settings.CoefficientB);
                 settingsValues.Add("coefficientC", settings.CoefficientC);
                 settingsValues.Add("coefficientD", settings.CoefficientD);
+                settingsValues.Add("kpValue", settings.PIDKp);
+                settingsValues.Add("kiValue", settings.PIDKi);
+                settingsValues.Add("kdValue", settings.PIDKd);
 
                 h.Add(settingsValues);
             }

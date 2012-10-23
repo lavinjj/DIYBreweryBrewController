@@ -17,27 +17,27 @@ namespace CodingSmackdown.Services
         private double _kd = 0;
         private double _ki = 461.53;
         private double _kp = 450;
-        private double _output = 50;
+        private double _output = 0;
         private PIDController _pid = null;
         private PIDAutoTune _pidAutoTune = null;
         private ITemperatureSensor _thermistor = null;
-        private bool _tuning = false;
+        private bool _tuning = true;
         private int _windowSize = 1000;
         private long _windowStartTime;
 
       public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor, Settings systemSettings)
         {
             SystemSettings = systemSettings;
+
             _outputHelper = helper;
 
             _thermistor = sensor;
-          
-            _pid = new PIDController(PinManagement.currentTemperatureSensor, _output, PinManagement.setTemperature, _kp, _ki, _kd, PIDController.PID_Direction.DIRECT);
 
-            // using default of 1 second between readings
-            // _windowSize = (int)SystemSettings.MinutesBetweenReadings;
+            _pid = new PIDController(PinManagement.currentTemperatureSensor, _output, PinManagement.setTemperature, SystemSettings.PIDKp, SystemSettings.PIDKi, SystemSettings.PIDKd, PIDController.PID_Direction.DIRECT);
 
             _pid.SetOutputLimits(0, 100);
+
+            _pid.SampleTime = _windowSize;
 
             _pid.Mode = PIDController.PID_Mode.AUTOMATIC;
 
@@ -72,7 +72,6 @@ namespace CodingSmackdown.Services
                     if (_tuning)
                     {
                         _outputHelper.DisplayText("PID|Auto Tuning");
-                        Thread.Sleep(1000);
 
                         _pidAutoTune.Input = PinManagement.currentTemperatureSensor;
 
@@ -110,6 +109,7 @@ namespace CodingSmackdown.Services
                         }
 
                         _output = _pidAutoTune.Output;
+                        PinManagement.currentPIDOuput = (float)_pidAutoTune.Output;
                     }
                     else
                     {
@@ -119,6 +119,7 @@ namespace CodingSmackdown.Services
                         _pid.Compute();
 
                         _output = _pid.Output;
+                        PinManagement.currentPIDOuput = (float)_pid.Output;
                     }
 
                     if (PinManagement.heaterEngaged)
@@ -160,7 +161,14 @@ namespace CodingSmackdown.Services
                 }
 
                 // Give up the clock so that the other threads can do their work
-                Thread.Sleep((int)(_windowSize * System.Math.Abs(_output)));
+                if (System.Math.Abs(_output) > 0)
+                {
+                    Thread.Sleep((int)(_windowSize * System.Math.Abs(_output)));
+                }
+                else
+                {
+                    Thread.Sleep((int)(SystemSettings.MinutesBetweenReadings));
+                }
             }
         }
 

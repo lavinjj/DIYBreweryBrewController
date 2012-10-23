@@ -42,7 +42,7 @@ namespace CodingSmackdown.PID
 
             SetTunings(kp, ki, kd);
 
-            _lastTime = DateTime.Now.Ticks - (SampleTime * 10000);
+            _lastTime = DateTime.Now.Ticks - (SampleTime * (long)output);
 
             _inAutoMode = false;
 
@@ -165,7 +165,7 @@ namespace CodingSmackdown.PID
             long now = DateTime.Now.Ticks;
             long timeChange = (now - _lastTime);
 
-            if (timeChange >= (SampleTime * 10000))
+            if (timeChange >= (SampleTime * Output))
             {
                 /*Compute all the working error variables*/
                 double input = Input;
