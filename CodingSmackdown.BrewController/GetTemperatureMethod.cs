@@ -19,6 +19,7 @@ namespace CodingSmackdown.BrewController
                 reading.Add("temperatureFahrenheit", PinManagement.currentTemperatureSensor.ToString("f2"));
                 reading.Add("isHeating", PinManagement.isHeating.ToString());
                 reading.Add("pidOutput", PinManagement.currentPIDOuput.ToString("f2"));
+                reading.Add("setTemperature", PinManagement.setTemperature.ToString("f2"));
 
                 if ((PinManagement.mashSteps != null) && (PinManagement.mashSteps.CurrentStep != null))
                 {

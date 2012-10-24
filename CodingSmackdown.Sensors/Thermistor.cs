@@ -78,7 +78,7 @@ namespace CodingSmackdown.Sensors
 
             double tempCelsius = rtot(thermResistance);
 
-            return (float)tempCelsius;
+            return (float)System.Math.Round(tempCelsius);
         }
 
         public float GetTemperatureInF()

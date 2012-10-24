@@ -12,6 +12,7 @@ namespace CodingSmackdown.Services
         static public OutputPort buzzerSolidPort = new OutputPort(Pins.GPIO_PIN_D6, false);
         static public float currentTemperatureSensor = 0.0F;
         static public float currentPIDOuput = 0;
+        static public bool autoTuning = false;
 
         // Define an Interrupt Port to watch when Pins D1, D2, D3, D4 Change States
         // Don't use a glitch filter

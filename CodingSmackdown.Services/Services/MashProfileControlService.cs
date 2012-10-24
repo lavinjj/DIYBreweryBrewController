@@ -41,6 +41,7 @@ namespace CodingSmackdown.Services
                             if ((_currentStep == null) && (!_stepsComplete))
                             {
                                 _currentStep = PinManagement.mashSteps.First();
+                                PinManagement.setTemperature = _currentStep.Temperature;
                                 _stepStartTime = DateTime.Now;
                             }
 
@@ -67,6 +68,8 @@ namespace CodingSmackdown.Services
                                         PinManagement.buzzerSolidPort.Write(false);
                                         // get the next step
                                         _currentStep = PinManagement.mashSteps.Next();
+                                        // set the temp
+                                        PinManagement.setTemperature = _currentStep.Temperature;
                                         // set the start time
                                         _stepStartTime = DateTime.Now;
                                         // update the flag

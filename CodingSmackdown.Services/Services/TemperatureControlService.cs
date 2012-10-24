@@ -24,8 +24,9 @@ namespace CodingSmackdown.Services
         private bool _tuning = true;
         private int _windowSize = 1000;
         private long _windowStartTime;
+        private bool _firstTime = true;
 
-      public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor, Settings systemSettings)
+        public TemperatureControlService(IOutputHelper helper, ITemperatureSensor sensor, Settings systemSettings)
         {
             SystemSettings = systemSettings;
 
@@ -59,71 +60,76 @@ namespace CodingSmackdown.Services
         {
             while (true)
             {
-                try
+                if (PinManagement.heaterEngaged)
                 {
-                    double tempCelsius = _thermistor.GetTemperatureInC();
-
-                    double tempFahrenheit = (tempCelsius * 1.8) + 32 + SystemSettings.TemperatureOffset;
-
-                    // update the static values
-                    PinManagement.currentTemperatureSensor = (float)tempFahrenheit;
-                    PinManagement.temperatureCelsiusSensor = (float)tempCelsius;
-
-                    if (_tuning)
+                    try
                     {
-                        _outputHelper.DisplayText("PID|Auto Tuning");
+                        double tempCelsius = _thermistor.GetTemperatureInC();
 
-                        _pidAutoTune.Input = PinManagement.currentTemperatureSensor;
+                        double tempFahrenheit = (tempCelsius * 1.8) + 32 + SystemSettings.TemperatureOffset;
 
-                        int val = (_pidAutoTune.Runtime());
+                        // update the static values
+                        PinManagement.currentTemperatureSensor = (float)tempFahrenheit;
+                        PinManagement.temperatureCelsiusSensor = (float)tempCelsius;
 
-                        if (val != 0)
+                        if (_tuning)
                         {
-                            _tuning = false;
+                            if (_firstTime)
+                            {
+                                PinManagement.setTemperature = PinManagement.currentTemperatureSensor;
+                                _firstTime = false;
+                            }
+
+                            _pidAutoTune.Input = PinManagement.currentTemperatureSensor;
+
+                            int val = (_pidAutoTune.Runtime());
+
+                            if (val != 0)
+                            {
+                                _tuning = false;
+                            }
+
+                            if (!_tuning)
+                            {
+                                //we're done, set the tuning parameters
+                                _kp = _pidAutoTune.Kp;
+                                SystemSettings.PIDKp = (float)_pidAutoTune.Kp;
+
+                                _ki = _pidAutoTune.Ki;
+                                SystemSettings.PIDKi = (float)_pidAutoTune.Ki;
+
+                                _kd = _pidAutoTune.Kd;
+                                SystemSettings.PIDKd = (float)_pidAutoTune.Kd;
+
+                                SystemSettings.saveSettings();
+
+                                _pid.SetTunings(_kp, _ki, _kd);
+
+                                _outputHelper.DisplayText("kp: " + _kp.ToString("f3"));
+                                Thread.Sleep(5000);
+                                _outputHelper.DisplayText("ki: " + _ki.ToString("f3"));
+                                Thread.Sleep(5000);
+                                _outputHelper.DisplayText("kd: " + _kd.ToString("f3"));
+                                Thread.Sleep(5000);
+
+                                AutoTuneHelper(false);
+                            }
+
+                            _output = _pidAutoTune.Output;
+                            PinManagement.currentPIDOuput = (float)_pidAutoTune.Output;
+                            PinManagement.autoTuning = _tuning;
+                        }
+                        else
+                        {
+                            _pid.Input = PinManagement.currentTemperatureSensor;
+                            _pid.SetPoint = PinManagement.setTemperature;
+
+                            _pid.Compute();
+
+                            _output = _pid.Output;
+                            PinManagement.currentPIDOuput = (float)_pid.Output;
                         }
 
-                        if (!_tuning)
-                        { 
-                            //we're done, set the tuning parameters
-                            _kp = _pidAutoTune.Kp;
-                            SystemSettings.PIDKp = (float)_pidAutoTune.Kp; 
-
-                            _ki = _pidAutoTune.Ki;
-                            SystemSettings.PIDKi = (float)_pidAutoTune.Ki; 
-                            
-                            _kd = _pidAutoTune.Kd;
-                            SystemSettings.PIDKd = (float)_pidAutoTune.Kd;
-
-                            SystemSettings.saveSettings();
-
-                            _pid.SetTunings(_kp, _ki, _kd);
-
-                            _outputHelper.DisplayText("kp: " + _kp.ToString("f3"));
-                            Thread.Sleep(5000);
-                            _outputHelper.DisplayText("ki: " + _ki.ToString("f3"));
-                            Thread.Sleep(5000);
-                            _outputHelper.DisplayText("kd: " + _kd.ToString("f3"));
-                            Thread.Sleep(5000);
-
-                            AutoTuneHelper(false);
-                        }
-
-                        _output = _pidAutoTune.Output;
-                        PinManagement.currentPIDOuput = (float)_pidAutoTune.Output;
-                    }
-                    else
-                    {
-                        _pid.Input = PinManagement.currentTemperatureSensor;
-                        _pid.SetPoint = PinManagement.setTemperature;
-
-                        _pid.Compute();
-
-                        _output = _pid.Output;
-                        PinManagement.currentPIDOuput = (float)_pid.Output;
-                    }
-
-                    if (PinManagement.heaterEngaged)
-                    {
                         if ((DateTime.Now.Ticks - _windowStartTime) > _windowSize)
                         {
                             _windowStartTime += _windowSize;
@@ -135,8 +141,6 @@ namespace CodingSmackdown.Services
                             PinManagement.heaterOnOffPort.Write(true);
                             // set our internal flag
                             PinManagement.isHeating = true;
-                            // display heat is on
-                            _outputHelper.DisplayText("Heat On");
                         }
                         else
                         {
@@ -145,25 +149,23 @@ namespace CodingSmackdown.Services
                             PinManagement.heaterOnOffPort.Write(false);
                             // set the heating flag to off
                             PinManagement.isHeating = false;
-                            // display heat is on
-                            _outputHelper.DisplayText("Heat Off");
                         }
+
+                        // update the log file
+                        _outputHelper.UpdateTemperatureLogFile();
+                        // update the LCD display
+                        _outputHelper.UpdateTemeratureDisplay();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                     }
 
-                    // update the log file
-                    _outputHelper.UpdateTemperatureLogFile();
-                    // update the LCD display
-                    _outputHelper.UpdateTemeratureDisplay();
                 }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                }
-
                 // Give up the clock so that the other threads can do their work
                 if (System.Math.Abs(_output) > 0)
                 {
-                    Thread.Sleep((int)(_windowSize * System.Math.Abs(_output)));
+                    Thread.Sleep((int)System.Math.Abs(_output));
                 }
                 else
                 {

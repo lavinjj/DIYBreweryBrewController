@@ -14,6 +14,7 @@ cs.sensorData = function () {
     self.currentMashTemp = ko.observable('');
     self.currentMashTime = ko.observable('');
     self.pidOutput = ko.observable('');
+    self.setTemperature = ko.observable('');
 };
 
 // [{"sensorMilliVolts": "711.740", "timeOfReading": "11\/29\/2011 04:09:31", "temperatureFahrenheit": "70.112", "temperatureCelsius": "21.174"}]
@@ -24,6 +25,8 @@ cs.sensorDataFromWire = function (sensorData) {
     self.temperatureCelsius = ko.observable(sensorData.temperatureCelsius);
     self.temperatureFahrenheit = ko.observable(sensorData.temperatureFahrenheit);
     self.isHeating = ko.observable(sensorData.isHeating);
+    self.pidOutput = ko.observable(sensorData.pidOutput);
+    self.setTemperature = ko.observable(sensorData.setTemperature);
     if (sensorData.currentMashStep !== undefined) {
         self.currentMashStep = ko.observable(sensorData.currentMashStep);
     }
@@ -41,12 +44,6 @@ cs.sensorDataFromWire = function (sensorData) {
     }
     else {
         self.currentMashTime = ko.observable('');
-    }
-    if (sensorData.pidOutput !== undefined) {
-        self.pidOutput = ko.observable(sensorData.pidOutput);
-    }
-    else {
-        self.pidOutput = ko.observable('');
     }
 };
 
@@ -115,6 +112,7 @@ cs.viewModel = function () {
     mashProfile = ko.observableArray([]),
     mashTemperature = ko.observable(''),
     mashStepLength = ko.observable(''),
+    setTemperatureData = ko.observableArray([]),
     temperatureData = ko.observableArray([]),
     heaterData = ko.observableArray([]),
     pidData = ko.observableArray([]),
@@ -146,6 +144,8 @@ cs.viewModel = function () {
             for (var i = 0; i < j.length; i++) {
                 sensorData(new cs.sensorDataFromWire(j[i]));
 
+                var setTemperature = parseFloat(j[i].setTemperature);
+                setTemperatureData().push(setTemperature);
                 var temperature = parseFloat(j[i].temperatureFahrenheit);
                 temperatureData().push(temperature);
                 var pid = parseFloat(j[i].pidOutput);
@@ -164,7 +164,7 @@ cs.viewModel = function () {
                 // "dataRendererOptions" option to pass in the url.
                 $('#chartdiv').html('');
 
-                var plot2 = $.jqplot('chartdiv', [cs.viewModel.temperatureData(), cs.viewModel.heaterData(), cs.viewModel.pidData()], {
+                var plot2 = $.jqplot('chartdiv', [cs.viewModel.setTemperatureData(), cs.viewModel.temperatureData(), cs.viewModel.heaterData(), cs.viewModel.pidData()], {
                     // Give the plot a title.
                     title: 'Temperature',
                     // You can specify options for all axes on the plot at once with
@@ -178,10 +178,7 @@ cs.viewModel = function () {
                     // Up to 9 y axes are supported.
                     axes: {
                         // options for each axis are specified in separate option objects.
-                        xaxis: { label: "Time", pad: 0 },
-                        yaxis: { label: "Degrees F" },
-                        y2axis: { label: "Heater" },
-                        y3axis: { label: "PID Output" }
+                        xaxis: { label: "Time", pad: 0 }
                     }
                 });
             }
@@ -253,6 +250,7 @@ cs.viewModel = function () {
     return {
         sensorData: sensorData,
         settings: settings,
+        setTemperatureData: setTemperatureData,
         temperatureData: temperatureData,
         heaterData: heaterData,
         pidData: pidData,

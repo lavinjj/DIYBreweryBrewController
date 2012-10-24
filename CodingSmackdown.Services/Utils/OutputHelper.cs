@@ -61,6 +61,18 @@ namespace CodingSmackdown.Services
                 displayString = new StringBuilder();
                 displayString.Append("Cnt Temp: ");
                 displayString.Append(PinManagement.currentTemperatureSensor.ToString("f2"));
+                if (PinManagement.isHeating)
+                {
+                    displayString.Append(" *");
+                }
+                else
+                {
+                    displayString.Append("  ");
+                }
+                if (PinManagement.autoTuning)
+                {
+                    displayString.Append("A");
+                }
                 _displayController.setCursor(0, 1);
                 _displayController.print(displayString.ToString());
             }
