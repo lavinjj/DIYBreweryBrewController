@@ -138,6 +138,21 @@ cs.viewModel = function () {
 
     // methods
     updateCurrentTemp = function () {
+
+        $.ajax({
+            url: method,
+            type: "GET",
+            data: jsonIn,
+            cache: false,
+            contentType: "application/json",
+            success: function (json) {
+                successCallback(json);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                errorCallback(xhr, ajaxOptions, thrownError);
+            }
+        });
+
         // send a request to the server to get the current temperature from the sensor
         $.getJSON('temperature', '', function (j) {
             // walk the responses and check to see if there was a failure

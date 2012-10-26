@@ -1,6 +1,6 @@
 TimeZoneOffset=0
 MinutesBetweenReadings=0.50
-TemperatureOffset=-4.00
+TemperatureOffset=-6.00
 TemperatureHeaterOffset=1.00
 HistoryFilename=temperatures.txt
 NTPServerName=pool.ntp.org
@@ -12,4 +12,3 @@ SubnetMask=255.255.255.0
 DefaultGateway=0.0.0.0
 PrimaryDNSAddress=192.168.1.1
 SecondaryDNSAddress=0.0.0.0
-

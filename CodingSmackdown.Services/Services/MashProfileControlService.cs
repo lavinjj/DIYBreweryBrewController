@@ -56,9 +56,7 @@ namespace CodingSmackdown.Services
                                     // check how long at the step temperature
                                     TimeSpan timeInterval = _currentTime.Subtract(_stepStartTime);
 
-                                    _outputHelper.DisplayText("Mash Step: " + _currentStep.StepNumber.ToString());
-                                    _outputHelper.DisplayText("Mash Temp: " + _currentStep.Temperature.ToString("f2"));
-                                    _outputHelper.DisplayText("Time: " + timeInterval.Minutes.ToString());
+                                    _outputHelper.DisplayText("Step: " + _currentStep.StepNumber.ToString() + "Temp: " + _currentStep.Temperature.ToString("f2") + "|Time: " + timeInterval.Minutes.ToString());
                                     
                                     if (timeInterval.Minutes >= _currentStep.Time)
                                     {
@@ -100,6 +98,12 @@ namespace CodingSmackdown.Services
                                     // reset the minutes remaining time
                                     PinManagement.currentMashStepStartTime = _currentTime;
                                 }
+                                else
+                                {
+                                    // check how long at the step temperature
+                                    TimeSpan timeInterval = _currentTime.Subtract(_stepStartTime);
+                                    _outputHelper.DisplayText("Step: " + _currentStep.StepNumber.ToString() + "Temp: " + _currentStep.Temperature.ToString("f2") + "|Time: " + timeInterval.Minutes.ToString());
+                                }
                             }
                         }
                     }
@@ -110,7 +114,7 @@ namespace CodingSmackdown.Services
                 }
 
                 // wait till next reading cycle
-                Thread.Sleep((int)SystemSettings.MinutesBetweenReadings);
+                Thread.Sleep(1000);
             }
         }
     }

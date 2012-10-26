@@ -21,7 +21,7 @@ namespace CodingSmackdown.Services
         private PIDController _pid = null;
         private PIDAutoTune _pidAutoTune = null;
         private ITemperatureSensor _thermistor = null;
-        private bool _tuning = true;
+        private bool _tuning = false;
         private int _windowSize = 1000;
         private long _windowStartTime;
         private bool _firstTime = true;
@@ -162,14 +162,14 @@ namespace CodingSmackdown.Services
                     }
 
                 }
-                // Give up the clock so that the other threads can do their work
-                if (System.Math.Abs(_output) > 0)
+
+                if (_output > 0)
                 {
-                    Thread.Sleep((int)System.Math.Abs(_output));
+                    Thread.Sleep((int)_output);
                 }
                 else
                 {
-                    Thread.Sleep((int)(SystemSettings.MinutesBetweenReadings));
+                    Thread.Sleep(_windowSize);
                 }
             }
         }
