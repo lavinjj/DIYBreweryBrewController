@@ -1,5 +1,4 @@
 using System;
-using System;
 using System.Threading;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
@@ -74,14 +73,9 @@ namespace CodingSmackdown.Drivers
         private byte _displaycontrol;
         private byte _shiftmode;
         private byte _incrementmode;
-        private byte _displaymode;
         private byte _cursormode;
         private byte _blinkmode;
-
-        private byte _initialized;
-
         private byte _numlines;
-        private byte _currline;
 
         private readonly SPI _spi;
         private readonly OutputPort _latchPort;
